@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kuben Kantine Bestilling</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+    <h1>Bestillingsskjema for Kuben Kantine</h1>
+
+    <form action="/submit" method="post">
+        <h2>Kundeinformasjon</h2>
+        <label>Navn:</label><input name="navn" required><br>
+        <label>Mobil:</label><input name="mobil" required><br>
+        <label>Organisasjonsnummer:</label><input name="organisasjonsnummer"><br>
+        <label>Fakturaadresse:</label><input name="fakturaadresse"><br>
+        <label>E-post:</label><input type="email" name="epost" required><br>
+        <label>Ressursnummer:</label><input name="ressursnummer"><br>
+        <label>Koststed:</label><input name="koststed"><br>
+
+        <h2>Henting</h2>
+        <label>Dato:</label><input type="date" name="hent_dato" required><br>
+        <label>Tid:</label><input type="time" name="hent_tid" required><br>
+        <label><input type="checkbox" name="spise_i_kantina"> Spise i kantina</label><br>
+
+        <h2>Meny</h2>
+
+        <!-- ---- DRIKKE ---- -->
+        <h3>Drikke</h3>
+        <table class="menu-table">
+            <tr>
+                <th>Nr</th>
+                <th>Produkt</th>
+                <th>Pris</th>
+                <th>Antall</th>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>Kaffekanne 1 liter</td>
+                <td>90</td>
+                <td><input type="number" name="antall_Kaffekanne_1l" min="0"></td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Kaffekontainer 5 liter</td>
+                <td>250</td>
+                <td><input type="number" name="antall_Kaffekontainer_5l" min="0"></td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Brus</td>
+                <td>35</td>
+                <td><input type="number" name="antall_Brus" min="0"></td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Mineralvann m/u kullsyre</td>
+                <td>25</td>
+                <td><input type="number" name="antall_Mineralvann" min="0"></td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td>Liten juice (eple/appelsin)</td>
+                <td>20</td>
+                <td><input type="number" name="antall_Juice" min="0"></td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td>Melk 1 liter</td>
+                <td>35</td>
+                <td><input type="number" name="antall_Melk" min="0"></td>
+            </tr>
+        </table>
+
+        <!-- ---- GRYTERETT ---- -->
+        <h3>Gryterett (serveres med brød og smør)</h3>
+        <table class="menu-table">
+            <tr>
+                <th>Nr</th>
+                <th>Rett</th>
+                <th>Pris</th>
+                <th>Antall</th>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>Oksegryte med ris</td>
+                <td>165</td>
+                <td><input type="number" name="antall_Oksegryte" min="0"></td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td>Chili sin carne med rømme og basmatiris</td>
+                <td>155</td>
+                <td><input type="number" name="antall_ChiliSinCarne" min="0"></td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td>Kyllinggryte med basmatiris/poteter</td>
+                <td>165</td>
+                <td><input type="number" name="antall_Kyllinggryte" min="0"></td>
+            </tr>
+        </table>
+
+        <!-- ---- FRUKT OG SNACKS ---- -->
+        <h3>Frukt og snacks</h3>
+        <table class="menu-table">
+            <tr>
+                <th>Nr</th>
+                <th>Produkt</th>
+                <th>Pris</th>
+                <th>Antall</th>
+            </tr>
+            <tr>
+                <td>12</td>
+                <td>Sesongens frukt (oppskåret)</td>
+                <td>40</td>
+                <td><input type="number" name="antall_FruktOppskåret" min="0"></td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>Sesongens frukt med Twist</td>
+                <td>50</td>
+                <td><input type="number" name="antall_FruktTwist" min="0"></td>
+            </tr>
+            <tr>
+                <td>15</td>
+                <td>Nøttemiks med tørket frukt</td>
+                <td>29</td>
+                <td><input type="number" name="antall_Nøttemiks" min="0"></td>
+            </tr>
+            <tr>
+                <td>16</td>
+                <td>Kjeks (pris pr person)</td>
+                <td>19</td>
+                <td><input type="number" name="antall_Kjeks" min="0"></td>
+            </tr>
+            <tr>
+                <td>18</td>
+                <td>Muffins</td>
+                <td>25</td>
+                <td><input type="number" name="antall_Muffins" min="0"></td>
+            </tr>
+            <tr>
+                <td>21</td>
+                <td>Dagens kake (Sjokolade eller gulrot)</td>
+                <td>30</td>
+                <td><input type="number" name="antall_Kake" min="0"></td>
+            </tr>
+        </table>
+
+        <!-- ---- SALATER ---- -->
+        <h3>Salater</h3>
+        <table class="menu-table">
+            <tr>
+                <th>Nr</th>
+                <th>Rett</th>
+                <th>Pris</th>
+                <th>Antall</th>
+            </tr>
+            <tr>
+                <td>29</td>
+                <td>Cæsarsalat med krutonger og kylling</td>
+                <td>79</td>
+                <td><input type="number" name="antall_Cæsarsalat" min="0"></td>
+            </tr>
+            <tr>
+                <td>30</td>
+                <td>Salat med tunfisk og egg</td>
+                <td>79</td>
+                <td><input type="number" name="antall_Tunfisksalat" min="0"></td>
+            </tr>
+            <tr>
+                <td>31</td>
+                <td>Salat med kylling og pesto</td>
+                <td>79</td>
+                <td><input type="number" name="antall_KyllingPesto" min="0"></td>
+            </tr>
+        </table>
+
+        <h2>Melding til kantina</h2>
+        <textarea name="melding" rows="4" cols="40"></textarea><br>
+
+        <button type="submit">Send bestilling</button>
+    </form>
+</body>
+
+</html>

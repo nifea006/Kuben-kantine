@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Kvittering - Kuben Kantine</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+<body>
+
+<div class="receipt">
+    <h1>Kvittering for bestilling</h1>
+    <p><strong>Navn:</strong> {{ order.navn }}</p>
+    <p><strong>E-post:</strong> {{ order.epost }}</p>
+    <p><strong>Mobil:</strong> {{ order.mobil }}</p>
+    <p><strong>Dato for henting:</strong> {{ order.hent_dato }}</p>
+    <p><strong>Tidspunkt:</strong> {{ order.hent_tid }}</p>
+    <p><strong>Koststed:</strong> {{ order.koststed }}</p>
+    <p><strong>Spise i kantina:</strong> {% if order.spise_i_kantina %}Ja{% else %}Nei{% endif %}</p>
+
+    <h3>Bestilte varer</h3>
+    <table>
+        <tr><th>Produkt</th><th>Antall</th><th>Pris pr stk</th><th>Sum</th></tr>
+        {% for item, data in order.ordre.items() %}
+        <tr>
+            <td>{{ item }}</td>
+            <td>{{ data['antall'] }}</td>
+            <td>{{ data['pris'] }} kr</td>
+            <td>{{ data['sum'] }} kr</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <p class="total">Totalt: {{ order.total }} kr</p>
+
+    <div class="back-link">
+        <a href="/">← Ny bestilling</a>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,97 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    background-color: #f8f9fa;
+}
+
+h1,
+h2,
+h3 {
+    color: #333;
+}
+
+form {
+    background: white;
+    padding: 20px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: inline-block;
+    width: 200px;
+    margin-top: 8px;
+}
+
+input,
+textarea {
+    margin-bottom: 10px;
+}
+
+.menu-table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.menu-table th,
+.menu-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.menu-table th {
+    background-color: #f2f2f2;
+}
+
+.menu-table input {
+    width: 70px;
+    padding: 4px;
+}
+
+
+
+
+
+.receipt {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    margin: 40px auto;
+}
+
+.receipt h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.receipt table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.receipt th,
+.receipt td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.receipt th {
+    background-color: #f2f2f2;
+}
+
+.total {
+    text-align: right;
+    font-weight: bold;
+    padding-top: 10px;
+}
+
+.back-link {
+    text-align: center;
+    margin-top: 20px;
+}
