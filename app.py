@@ -131,7 +131,7 @@ def submit():
         "total": total
     }
 
-    return render_template("success.html", order=order_info)
+    return render_template("kvittering.html", order=order_info)
 
 
 if __name__ == '__main__':
