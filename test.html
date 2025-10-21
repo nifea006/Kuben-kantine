@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="bruker-info">
+        <div class="Kundeinformasjon">
+            <h2>Kundeinformasjon</h2>
+            <label>Navn:</label><input name="navn" required><br>
+            <label>Mobil:</label><input name="mobil" required><br>
+            <label>Organisasjonsnummer:</label><input name="organisasjonsnummer"><br>
+            <label>Fakturaadresse:</label><input name="fakturaadresse"><br>
+            <label>E-post:</label><input type="email" name="epost" required><br>
+            <label>Ressursnummer:</label><input name="ressursnummer"><br>
+            <div id="koststedContainer">
+                <label>Koststed:</label>
+                <select name="koststed" id="koststedSelect" onchange="toggleKoststedInput()">
+                    <option value="12451-Rektor">12451 Rektor</option>
+                    <option value="12453-Internasjonalisering">12453 Internasjonalisering (Kristin)</option>
+                    <option value="12454-Elevkontoret">12454 Elevkontoret</option>
+                    <option value="12455-Elevtjenesten">12455 Elevtjenesten (rådgivere, miljø etc)</option>
+                    <option value="12465-Fellesfag-ST">12465 Fellesfag ST</option>
+                    <option value="12470-Bygg">12470 Bygg</option>
+                    <option value="12472-Helse-og-oppvekst">12472 Helse- og oppvekst</option>
+                    <option value="12474-Elektro">12474 Elektro</option>
+                    <option value="12475-TEK">12475 TEK</option>
+                    <option value="12476-IM">12476 IM</option>
+                    <option value="12478-OT">12478 OT</option>
+                    <option value="12484-ED-nettverket">12484 ED-nettverket</option>
+                    <option value="12485-Karriereenheten">12485 Karriereenheten</option>
+                    <option value="12488-KKT">12488 KKT</option>
+                    <option value="12491-Økonomi-adm">12491 Økonomi/adm</option>
+                    <option value="12493-Kantine">12493 Kantine</option>
+                    <option value="12494-Teknisk-drift">12494 Teknisk drift - vedlikehold</option>
+                    <option value="12495-Husleie-energi-renhold">12495 Husleie, energi, renhold</option>
+                    <option value="12498-Teknisk-støtte-IKT">12498 Teknisk støtte (IKT)</option>
+                    <option value="12898-MO">12898 MO</option>
+                    <option value="12920-Fagskolen-i-Oslo">12920 Fagskolen i Oslo</option>
+                    <option value="other">Xxxcc Annet</option>
+                </select>
+                <input type="text" name="koststedCustom" id="koststedInput" style="display: none;">
+            </div>
+        </div>
+        <script>
+            function toggleKoststedInput() {
+                const select = document.getElementById('koststedSelect');
+                const input = document.getElementById('koststedInput');
+                input.style.display = select.value === 'other' ? 'block' : 'none';
+            }
+        </script>
+    </div>
+    <div class="Henting">
+        <h2>Henting</h2>
+        <label>Dato:</label><input type="date" name="hent_dato" required><br>
+        <label>Tid:</label><input type="time" name="hent_tid" required><br>
+        <label><input type="checkbox" name="spise_i_kantina" id="spise_i_kantina" onchange="toggleSpiseIKantina()">
+            Spise i kantina</label><br>
+        <input type="number" name="antall_personer" min="1" id="antall_personer" style="display: none;"
+            placeholder="Antall personer">
+    </div>
+    </div>
+    <script>
+        function toggleSpiseIKantina() {
+            const checkbox = document.getElementById('spise_i_kantina');
+            const antallPersonerInput = document.getElementById('antall_personer');
+            antallPersonerInput.style.display = checkbox.checked ? 'block' : 'none';
+        }
+    </script>
+</body>
+
+</html>

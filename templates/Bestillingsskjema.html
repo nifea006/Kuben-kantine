@@ -14,19 +14,31 @@
         <div class="bruker-info">
             <div class="Kundeinformasjon">
                 <h2>Kundeinformasjon</h2>
-                <label>Navn:</label><input name="navn" required><br>
-                <label>Mobil:</label><input name="mobil" required><br>
-                <label>Organisasjonsnummer:</label><input name="organisasjonsnummer"><br>
-                <label>Fakturaadresse:</label><input name="fakturaadresse"><br>
-                <label>E-post:</label><input type="email" name="epost" required><br>
-                <label>Ressursnummer:</label><input name="ressursnummer"><br>
-                <div id="koststedContainer"></div>
+                <div class="form-row">
+                    <label>Navn:</label><input name="navn" required>
+                </div>
+                <div class="form-row">
+                    <label>Mobil:</label><input name="mobil" required>
+                </div>
+                <div class="form-row">
+                    <label>Organisasjonsnummer:</label><input name="organisasjonsnummer">
+                </div>
+                <div class="form-row">
+                    <label>Fakturaadresse:</label><input name="fakturaadresse">
+                </div>
+                <div class="form-row">
+                    <label>E-post:</label><input type="email" name="epost" required>
+                </div>
+                <div class="form-row">
+                    <label>Ressursnummer:</label><input name="ressursnummer">
+                </div>
+                <div class="form-row">
                     <label>Koststed:</label>
-                    <select name="koststed" id="koststedSelect" onchange="toggleKoststedInput()" >
+                    <select name="koststed" id="koststedSelect" onchange="toggleKoststedInput()" required>
                         <option value="12451-Rektor">12451 Rektor</option>
                         <option value="12453-Internasjonalisering">12453 Internasjonalisering (Kristin)</option>
                         <option value="12454-Elevkontoret">12454 Elevkontoret</option>
-                        <option value="12455-Elevtjenesten">12455 Elevtjenesten (rådgivere, miljø etc)</option>
+                        <option value="12455-Elevtjenesten">12455 Elevtjenesten</option>
                         <option value="12465-Fellesfag-ST">12465 Fellesfag ST</option>
                         <option value="12470-Bygg">12470 Bygg</option>
                         <option value="12472-Helse-og-oppvekst">12472 Helse- og oppvekst</option>
@@ -44,25 +56,42 @@
                         <option value="12498-Teknisk-støtte-IKT">12498 Teknisk støtte (IKT)</option>
                         <option value="12898-MO">12898 MO</option>
                         <option value="12920-Fagskolen-i-Oslo">12920 Fagskolen i Oslo</option>
-                        <option value="other">Xxxcc Annet</option>
+                        <option value="other">Annet</option>
                     </select>
-                    <input type="text" name="koststedCustom" id="koststedInput" style="display: none;">
+                    <input type="text" name="koststedCustom" id="koststedInput" style="display:none;">
                 </div>
-                <script>
-                    function toggleKoststedInput() {
-                        const select = document.getElementById('koststedSelect');
-                        const input = document.getElementById('koststedInput');
-                        input.style.display = select.value === 'other' ? 'block' : 'none';
-                    }
-                </script>
             </div>
+
             <div class="Henting">
                 <h2>Henting</h2>
-                <label>Dato:</label><input type="date" name="hent_dato" required><br>
-                <label>Tid:</label><input type="time" name="hent_tid" required><br>
-                <label><input type="checkbox" name="spise_i_kantina"> Spise i kantina</label><br>
+                <div class="form-row">
+                    <label>Dato:</label><input type="date" name="hent_dato" required>
+                </div>
+                <div class="form-row">
+                    <label>Tid:</label><input type="time" name="hent_tid" required>
+                </div>
+                <div class="form-row">
+                    <label><input type="checkbox" name="spise_i_kantina" id="spise_i_kantina"
+                            onchange="toggleSpiseIKantina()"> Spise i kantina</label>
+                    <input type="number" name="antall_personer" class="form-row" id="antallContainer" min="1"
+                        placeholder="Antall personer" style="display:none;">
+                </div>
             </div>
         </div>
+
+        <script>
+            function toggleKoststedInput() {
+                const select = document.getElementById('koststedSelect');
+                const input = document.getElementById('koststedInput');
+                input.style.display = select.value === 'other' ? 'inline-block' : 'none';
+            }
+            function toggleSpiseIKantina() {
+                const checkbox = document.getElementById('spise_i_kantina');
+                const antallContainer = document.getElementById('antallContainer');
+                antallContainer.style.display = checkbox.checked ? 'flex' : 'none';
+            }
+        </script>
+
         <h2>Meny</h2>
 
         <!-- ---- DRIKKE ---- -->

@@ -5,102 +5,89 @@ body {
 }
 
 h1,
-h2,
-h3 {
+h2 {
     color: #333;
 }
 
 form {
     background: white;
-    padding: 20px 30px;
+    padding: 25px 30px;
     border-radius: 10px;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    max-width: 1200px;
+    margin: auto;
 }
 
+/* --- FLEX LAYOUT FOR TOP SECTION --- */
 .bruker-info {
     display: flex;
     justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 40px;
+    margin-bottom: 30px;
 }
 
+.Kundeinformasjon,
 .Henting {
-    margin-right: 15vw;
+    flex: 1;
+    min-width: 400px;
 }
 
-label {
-    display: inline-block;
-    width: 200px;
-    margin-top: 8px;
+.Kundeinformasjon h2,
+.Henting h2 {
+    margin-bottom: 10px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
 }
 
-input,
-textarea {
+/* Each form row: label + input side by side */
+.form-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 10px;
 }
 
-.menu-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-bottom: 20px;
+label {
+    flex: 0 0 180px;
+    font-weight: 500;
+    color: #333;
 }
 
-.menu-table th,
-.menu-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
+input[type="text"],
+input[type="email"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select {
+    flex: 1;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
 }
 
-.menu-table th {
-    background-color: #f2f2f2;
+input[type="checkbox"] {
+    margin-right: 5px;
 }
 
-.menu-table input {
-    width: 70px;
-    padding: 4px;
+/* Keep Henting box visually lighter */
+.Henting {
+    background-color: #f4f4f6;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
 }
 
+/* --- RESPONSIVE --- */
+@media (max-width: 900px) {
+    .bruker-info {
+        flex-direction: column;
+    }
 
-
-
-
-.receipt {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    max-width: 700px;
-    margin: 40px auto;
-}
-
-.receipt h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.receipt table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
-
-.receipt th,
-.receipt td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.receipt th {
-    background-color: #f2f2f2;
-}
-
-.total {
-    text-align: right;
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-.back-link {
-    text-align: center;
-    margin-top: 20px;
+    .Henting {
+        width: 100%;
+        margin-top: 20px;
+    }
 }
