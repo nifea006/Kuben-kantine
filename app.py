@@ -64,41 +64,38 @@ def submit():
 
     # Menu with prices
     priser = {
-        "Kaffekanne 1 liter": 90,
-        "Kaffekontainer 5 liter": 250,
-        "Brus": 35,
-        "Mineralvann m/u kullsyre": 25,
-        "Liten juice (eple/appelsin)": 20,
-        "Melk 1 liter": 35,
-        "Oksegryte med ris": 165,
-        "Chili sin carne med rømme og basmatiris": 155,
-        "Kyllinggryte med basmatiris/poteter": 165,
-        "Sesongens frukt (oppskåret)": 40,
-        "Sesongens frukt med Twist": 50,
-        "Nøttemiks med tørket frukt": 29,
-        "Kjeks (pris pr person)": 19,
-        "Muffins": 25,
-        "Dagens kake (Sjokolade eller gulrot)": 30,
-        "Cæsarsalat med krutonger og kylling": 79,
-        "Salat med tunfisk og egg": 79,
-        "Salat med kylling og pesto": 79
-    }
+    "antall_Kaffekanne_1l": {"navn": "Kaffekanne 1 liter", "pris": 90},
+    "antall_Kaffekontainer_5l": {"navn": "Kaffekontainer 5 liter", "pris": 250},
+    "antall_Brus": {"navn": "Brus", "pris": 35},
+    "antall_Mineralvann": {"navn": "Mineralvann m/u kullsyre", "pris": 25},
+    "antall_Juice": {"navn": "Liten juice (eple/appelsin)", "pris": 20},
+    "antall_Melk": {"navn": "Melk 1 liter", "pris": 35},
+    "antall_Oksegryte": {"navn": "Oksegryte med ris", "pris": 165},
+    "antall_ChiliSinCarne": {"navn": "Chili sin carne med rømme og basmatiris", "pris": 155},
+    "antall_Kyllinggryte": {"navn": "Kyllinggryte med basmatiris/poteter", "pris": 165},
+    "antall_FruktOppskåret": {"navn": "Sesongens frukt (oppskåret)", "pris": 40},
+    "antall_FruktTwist": {"navn": "Sesongens frukt med Twist", "pris": 50},
+    "antall_Nøttemiks": {"navn": "Nøttemiks med tørket frukt", "pris": 29},
+    "antall_Kjeks": {"navn": "Kjeks (pris pr person)", "pris": 19},
+    "antall_Muffins": {"navn": "Muffins", "pris": 25},
+    "antall_Kake": {"navn": "Dagens kake (Sjokolade eller gulrot)", "pris": 30},
+    "antall_Cæsarsalat": {"navn": "Cæsarsalat med krutonger og kylling", "pris": 79},
+    "antall_Tunfisksalat": {"navn": "Salat med tunfisk og egg", "pris": 79},
+    "antall_KyllingPesto": {"navn": "Salat med kylling og pesto", "pris": 79}
+}
 
     # Collect order items
     ordre = {}
     total = 0
     for key, value in request.form.items():
-        if key.startswith("antall_") and value and int(value) > 0:
-            navn_vare = key.replace("antall_", "").replace("_", " ")
-            pris = 0
-            for n, p in priser.items():
-                if navn_vare.lower() in n.lower():
-                    pris = p
-                    break
+        if key in priser and value and int(value) > 0:
             antall = int(value)
+            navn_vare = priser[key]["navn"]
+            pris = priser[key]["pris"]
             sum_vare = antall * pris
             total += sum_vare
-            ordre[n] = {"antall": antall, "pris": pris, "sum": sum_vare}
+            ordre[navn_vare] = {"antall": antall, "pris": pris, "sum": sum_vare}
+
 
     # Save to database
     try:
