@@ -17,6 +17,15 @@ form {
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
+.bruker-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+.Henting {
+    margin-right: 15vw;
+}
+
 label {
     display: inline-block;
     width: 200px;

@@ -11,20 +11,24 @@
     <h1>Bestillingsskjema for Kuben Kantine</h1>
 
     <form action="/submit" method="post">
-        <h2>Kundeinformasjon</h2>
-        <label>Navn:</label><input name="navn" required><br>
-        <label>Mobil:</label><input name="mobil" required><br>
-        <label>Organisasjonsnummer:</label><input name="organisasjonsnummer"><br>
-        <label>Fakturaadresse:</label><input name="fakturaadresse"><br>
-        <label>E-post:</label><input type="email" name="epost" required><br>
-        <label>Ressursnummer:</label><input name="ressursnummer"><br>
-        <label>Koststed:</label><input name="koststed"><br>
-
-        <h2>Henting</h2>
-        <label>Dato:</label><input type="date" name="hent_dato" required><br>
-        <label>Tid:</label><input type="time" name="hent_tid" required><br>
-        <label><input type="checkbox" name="spise_i_kantina"> Spise i kantina</label><br>
-
+        <div class="bruker-info">
+            <div class="Kundeinformasjon">
+                <h2>Kundeinformasjon</h2>
+                <label>Navn:</label><input name="navn" required><br>
+                <label>Mobil:</label><input name="mobil" required><br>
+                <label>Organisasjonsnummer:</label><input name="organisasjonsnummer"><br>
+                <label>Fakturaadresse:</label><input name="fakturaadresse"><br>
+                <label>E-post:</label><input type="email" name="epost" required><br>
+                <label>Ressursnummer:</label><input name="ressursnummer"><br>
+                <label>Koststed:</label><input name="koststed"><br>
+            </div>
+            <div class="Henting">
+                <h2>Henting</h2>
+                <label>Dato:</label><input type="date" name="hent_dato" required><br>
+                <label>Tid:</label><input type="time" name="hent_tid" required><br>
+                <label><input type="checkbox" name="spise_i_kantina"> Spise i kantina</label><br>
+            </div>
+        </div>
         <h2>Meny</h2>
 
         <!-- ---- DRIKKE ---- -->

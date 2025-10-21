@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request
 import mysql.connector
 from mysql.connector import Error
 
@@ -118,7 +118,7 @@ def submit():
     except Error as e:
         return f"Databasefeil: {e}"
 
-    # Build data for receipt
+    # Data for receipt
     order_info = {
         "navn": navn,
         "epost": epost,
