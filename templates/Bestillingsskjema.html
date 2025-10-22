@@ -15,50 +15,56 @@
             <div class="Kundeinformasjon">
                 <h2>Kundeinformasjon</h2>
                 <div class="form-row">
-                    <label>Navn:</label><input name="navn" required>
+                    <label>Navn:</label><input class="Kundeinformasjon-fillout" name="navn" required>
                 </div>
                 <div class="form-row">
-                    <label>Mobil:</label><input name="mobil" required>
+                    <label>Mobil:</label><input class="Kundeinformasjon-fillout" name="mobil" required>
                 </div>
                 <div class="form-row">
-                    <label>Organisasjonsnummer:</label><input name="organisasjonsnummer">
+                    <label>Organisasjonsnummer:</label><input class="Kundeinformasjon-fillout"
+                        name="organisasjonsnummer">
                 </div>
                 <div class="form-row">
-                    <label>Fakturaadresse:</label><input name="fakturaadresse">
+                    <label>Fakturaadresse:</label><input class="Kundeinformasjon-fillout" name="fakturaadresse">
                 </div>
                 <div class="form-row">
-                    <label>E-post:</label><input type="email" name="epost" required>
+                    <label>E-post:</label><input class="Kundeinformasjon-fillout" type="email" name="epost" required>
                 </div>
                 <div class="form-row">
-                    <label>Ressursnummer:</label><input name="ressursnummer">
+                    <label>Ressursnummer:</label><input class="Kundeinformasjon-fillout" name="ressursnummer">
                 </div>
                 <div class="form-row">
                     <label>Koststed:</label>
-                    <select name="koststed" id="koststedSelect" onchange="toggleKoststedInput()" required>
-                        <option value="12451-Rektor">12451 Rektor</option>
-                        <option value="12453-Internasjonalisering">12453 Internasjonalisering (Kristin)</option>
-                        <option value="12454-Elevkontoret">12454 Elevkontoret</option>
-                        <option value="12455-Elevtjenesten">12455 Elevtjenesten</option>
-                        <option value="12465-Fellesfag-ST">12465 Fellesfag ST</option>
-                        <option value="12470-Bygg">12470 Bygg</option>
-                        <option value="12472-Helse-og-oppvekst">12472 Helse- og oppvekst</option>
-                        <option value="12474-Elektro">12474 Elektro</option>
-                        <option value="12475-TEK">12475 TEK</option>
-                        <option value="12476-IM">12476 IM</option>
-                        <option value="12478-OT">12478 OT</option>
-                        <option value="12484-ED-nettverket">12484 ED-nettverket</option>
-                        <option value="12485-Karriereenheten">12485 Karriereenheten</option>
-                        <option value="12488-KKT">12488 KKT</option>
-                        <option value="12491-Økonomi-adm">12491 Økonomi/adm</option>
-                        <option value="12493-Kantine">12493 Kantine</option>
-                        <option value="12494-Teknisk-drift">12494 Teknisk drift - vedlikehold</option>
-                        <option value="12495-Husleie-energi-renhold">12495 Husleie, energi, renhold</option>
-                        <option value="12498-Teknisk-støtte-IKT">12498 Teknisk støtte (IKT)</option>
-                        <option value="12898-MO">12898 MO</option>
-                        <option value="12920-Fagskolen-i-Oslo">12920 Fagskolen i Oslo</option>
-                        <option value="other">Annet</option>
-                    </select>
-                    <input type="text" name="koststedCustom" id="koststedInput" style="display:none;">
+                    <div id="select-input">
+                        <select name="koststed" id="koststedSelect" class="Kundeinformasjon-fillout"
+                            onchange="toggleKoststedInput()" required>
+                            <option value="">-Velg koststed-</option>
+                            <option value="12451-Rektor">12451 Rektor</option>
+                            <option value="12453-Internasjonalisering">12453 Internasjonalisering (Kristin)</option>
+                            <option value="12454-Elevkontoret">12454 Elevkontoret</option>
+                            <option value="12455-Elevtjenesten">12455 Elevtjenesten</option>
+                            <option value="12465-Fellesfag-ST">12465 Fellesfag ST</option>
+                            <option value="12470-Bygg">12470 Bygg</option>
+                            <option value="12472-Helse-og-oppvekst">12472 Helse- og oppvekst</option>
+                            <option value="12474-Elektro">12474 Elektro</option>
+                            <option value="12475-TEK">12475 TEK</option>
+                            <option value="12476-IM">12476 IM</option>
+                            <option value="12478-OT">12478 OT</option>
+                            <option value="12484-ED-nettverket">12484 ED-nettverket</option>
+                            <option value="12485-Karriereenheten">12485 Karriereenheten</option>
+                            <option value="12488-KKT">12488 KKT</option>
+                            <option value="12491-Økonomi-adm">12491 Økonomi/adm</option>
+                            <option value="12493-Kantine">12493 Kantine</option>
+                            <option value="12494-Teknisk-drift">12494 Teknisk drift - vedlikehold</option>
+                            <option value="12495-Husleie-energi-renhold">12495 Husleie, energi, renhold</option>
+                            <option value="12498-Teknisk-støtte-IKT">12498 Teknisk støtte (IKT)</option>
+                            <option value="12898-MO">12898 MO</option>
+                            <option value="12920-Fagskolen-i-Oslo">12920 Fagskolen i Oslo</option>
+                            <option value="other">Annet</option>
+                        </select>
+                        <input type="text" name="koststedCustom" class="Kundeinformasjon-fillout" id="koststedInput"
+                            placeholder="Skriv inn koststedet" style="display:none;">
+                    </div>
                 </div>
             </div>
 
@@ -84,6 +90,7 @@
                 const select = document.getElementById('koststedSelect');
                 const input = document.getElementById('koststedInput');
                 input.style.display = select.value === 'other' ? 'inline-block' : 'none';
+                input.required = select.value === 'other' ? true : false;
             }
             function toggleSpiseIKantina() {
                 const checkbox = document.getElementById('spise_i_kantina');
@@ -94,7 +101,7 @@
 
         <h2>Meny</h2>
 
-        <!-- ---- DRIKKE ---- -->
+        <!-- DRIKKE -->
         <h3>Drikke</h3>
         <table class="menu-table">
             <tr>
@@ -141,7 +148,7 @@
             </tr>
         </table>
 
-        <!-- ---- GRYTERETT ---- -->
+        <!-- GRYTERETT -->
         <h3>Gryterett (serveres med brød og smør)</h3>
         <table class="menu-table">
             <tr>
@@ -170,7 +177,7 @@
             </tr>
         </table>
 
-        <!-- ---- FRUKT OG SNACKS ---- -->
+        <!-- FRUKT OG SNACKS -->
         <h3>Frukt og snacks</h3>
         <table class="menu-table">
             <tr>
@@ -217,7 +224,7 @@
             </tr>
         </table>
 
-        <!-- ---- SALATER ---- -->
+        <!-- SALATER -->
         <h3>Salater</h3>
         <table class="menu-table">
             <tr>

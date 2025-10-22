@@ -30,7 +30,7 @@ def create_table():
                 koststed VARCHAR(50),
                 hent_dato DATE,
                 hent_tid TIME,
-                spise_i_kantina BOOLEAN,
+                spise_i_kantina VARCHAR(50),
                 melding TEXT,
                 ordre TEXT
             )
@@ -59,30 +59,40 @@ def submit():
     koststed = request.form['koststed']
     hent_dato = request.form['hent_dato']
     hent_tid = request.form['hent_tid']
-    spise_i_kantina = 'spise_i_kantina' in request.form
     melding = request.form['melding']
+
+    spise_i_kantina_bool = 'spise_i_kantina' in request.form
+    antall_personer = request.form.get('antall_personer', '').strip()
+
+    if spise_i_kantina_bool:
+        if antall_personer and antall_personer.isdigit() and int(antall_personer) > 0:
+            spise_i_kantina = f"Ja, {antall_personer} personer"
+        else:
+            spise_i_kantina = "Ja"
+    else:
+        spise_i_kantina = "Nei"
 
     # Menu with prices
     priser = {
-    "antall_Kaffekanne_1l": {"navn": "Kaffekanne 1 liter", "pris": 90},
-    "antall_Kaffekontainer_5l": {"navn": "Kaffekontainer 5 liter", "pris": 250},
-    "antall_Brus": {"navn": "Brus", "pris": 35},
-    "antall_Mineralvann": {"navn": "Mineralvann m/u kullsyre", "pris": 25},
-    "antall_Juice": {"navn": "Liten juice (eple/appelsin)", "pris": 20},
-    "antall_Melk": {"navn": "Melk 1 liter", "pris": 35},
-    "antall_Oksegryte": {"navn": "Oksegryte med ris", "pris": 165},
-    "antall_ChiliSinCarne": {"navn": "Chili sin carne med rømme og basmatiris", "pris": 155},
-    "antall_Kyllinggryte": {"navn": "Kyllinggryte med basmatiris/poteter", "pris": 165},
-    "antall_FruktOppskåret": {"navn": "Sesongens frukt (oppskåret)", "pris": 40},
-    "antall_FruktTwist": {"navn": "Sesongens frukt med Twist", "pris": 50},
-    "antall_Nøttemiks": {"navn": "Nøttemiks med tørket frukt", "pris": 29},
-    "antall_Kjeks": {"navn": "Kjeks (pris pr person)", "pris": 19},
-    "antall_Muffins": {"navn": "Muffins", "pris": 25},
-    "antall_Kake": {"navn": "Dagens kake (Sjokolade eller gulrot)", "pris": 30},
-    "antall_Cæsarsalat": {"navn": "Cæsarsalat med krutonger og kylling", "pris": 79},
-    "antall_Tunfisksalat": {"navn": "Salat med tunfisk og egg", "pris": 79},
-    "antall_KyllingPesto": {"navn": "Salat med kylling og pesto", "pris": 79}
-}
+        "antall_Kaffekanne_1l": {"navn": "Kaffekanne 1 liter", "pris": 90},
+        "antall_Kaffekontainer_5l": {"navn": "Kaffekontainer 5 liter", "pris": 250},
+        "antall_Brus": {"navn": "Brus", "pris": 35},
+        "antall_Mineralvann": {"navn": "Mineralvann m/u kullsyre", "pris": 25},
+        "antall_Juice": {"navn": "Liten juice (eple/appelsin)", "pris": 20},
+        "antall_Melk": {"navn": "Melk 1 liter", "pris": 35},
+        "antall_Oksegryte": {"navn": "Oksegryte med ris", "pris": 165},
+        "antall_ChiliSinCarne": {"navn": "Chili sin carne med rømme og basmatiris", "pris": 155},
+        "antall_Kyllinggryte": {"navn": "Kyllinggryte med basmatiris/poteter", "pris": 165},
+        "antall_FruktOppskåret": {"navn": "Sesongens frukt (oppskåret)", "pris": 40},
+        "antall_FruktTwist": {"navn": "Sesongens frukt med Twist", "pris": 50},
+        "antall_Nøttemiks": {"navn": "Nøttemiks med tørket frukt", "pris": 29},
+        "antall_Kjeks": {"navn": "Kjeks (pris pr person)", "pris": 19},
+        "antall_Muffins": {"navn": "Muffins", "pris": 25},
+        "antall_Kake": {"navn": "Dagens kake (Sjokolade eller gulrot)", "pris": 30},
+        "antall_Cæsarsalat": {"navn": "Cæsarsalat med krutonger og kylling", "pris": 79},
+        "antall_Tunfisksalat": {"navn": "Salat med tunfisk og egg", "pris": 79},
+        "antall_KyllingPesto": {"navn": "Salat med kylling og pesto", "pris": 79}
+    }
 
     # Collect order items
     ordre = {}
@@ -95,7 +105,6 @@ def submit():
             sum_vare = antall * pris
             total += sum_vare
             ordre[navn_vare] = {"antall": antall, "pris": pris, "sum": sum_vare}
-
 
     # Save to database
     try:
@@ -132,6 +141,7 @@ def submit():
     }
 
     return render_template("kvittering.html", order=order_info)
+
 
 
 if __name__ == '__main__':
