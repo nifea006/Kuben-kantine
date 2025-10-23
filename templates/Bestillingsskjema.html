@@ -254,10 +254,130 @@
         </table>
 
         <h2>Melding til kantina</h2>
-        <textarea name="melding" rows="4" cols="40"></textarea><br>
+        <textarea name="melding" rows="4" cols="40" placeholder="f.eks. allergier"></textarea><br>
 
-        <button type="submit">Send bestilling</button>
+        <button id="submitButton" type="submit">Send bestilling</button>
     </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        (function () {
+            emailjs.init({
+                publicKey: "AiKBK0YLkiGztMK2u",
+            });
+        })();
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector("form");
+
+            form.addEventListener("submit", function (event) {
+                event.preventDefault();
+
+                const formData = new FormData(form);
+
+
+                let ordreTekst = "";
+                for (const [key, value] of formData.entries()) {
+                    if (key.startsWith("antall_") && parseInt(value) > 0) {
+                        if (key === "antall_personer") continue;
+
+                        const produktNavn = key
+                            .replace("antall_", "")
+                            .replaceAll("_", " ")
+                            .replace("Cæsarsalat", "Cæsarsalat med krutonger og kylling")
+                            .replace("KyllingPesto", "Salat med kylling og pesto")
+                            .replace("Tunfisksalat", "Salat med tunfisk og egg");
+
+                        ordreTekst += `${produktNavn}: x${value}\n`;
+                    }
+                }
+
+                // Calculate total price
+                const prices = {
+                    Kaffekanne_1l: 90,
+                    Kaffekontainer_5l: 250,
+                    Brus: 35,
+                    Mineralvann: 25,
+                    Juice: 20,
+                    Melk: 35,
+                    Oksegryte: 165,
+                    ChiliSinCarne: 155,
+                    Kyllinggryte: 165,
+                    FruktOppskåret: 40,
+                    FruktTwist: 50,
+                    Nøttemiks: 29,
+                    Kjeks: 19,
+                    Muffins: 25,
+                    Kake: 30,
+                    Cæsarsalat: 79,
+                    Tunfisksalat: 79,
+                    KyllingPesto: 79
+                };
+
+                let total = 0;
+                for (const [key, value] of formData.entries()) {
+                    if (key.startsWith("antall_") && parseInt(value) > 0) {
+                        const product = key.replace("antall_", "");
+                        if (prices[product]) {
+                            total += prices[product] * parseInt(value);
+                        }
+                    }
+                }
+
+                // Gather all info for EmailJS
+                const templateParams = {
+                    navn: formData.get("navn"),
+                    mobil: formData.get("mobil"),
+                    organisasjonsnummer: formData.get("organisasjonsnummer"),
+                    fakturaadresse: formData.get("fakturaadresse"),
+                    epost: formData.get("epost"),
+                    ressursnummer: formData.get("ressursnummer"),
+                    koststed: formData.get("koststed"),
+                    bestillingsdato: new Date().toLocaleDateString("no-NO"),
+                    bestillingstid: new Date().toLocaleTimeString("no-NO"),
+                    hent_dato: formData.get("hent_dato"),
+                    hent_tid: formData.get("hent_tid"),
+                    spise_i_kantina: formData.get("spise_i_kantina")
+                        ? `Ja (${formData.get("antall_personer")} personer)`
+                        : "Nei",
+                    ordre: ordreTekst || "Ingen produkter valgt",
+                    total: `${total} kr`,
+                    melding: formData.get("melding") ? formData.get("melding") : "Ingen melding"
+                };
+
+                // Include message inside the order section
+                let meldingTekst = "";
+                if (templateParams.melding && templateParams.melding !== "Ingen melding") {
+                    meldingTekst = `\n\nMelding fra kunde:\n${templateParams.melding}`;
+                }
+
+                // Append message to the order text
+                templateParams.ordre = `${templateParams.ordre}${meldingTekst}`;
+
+                // Disable button while sending
+                const button = document.getElementById("submitButton");
+                button.disabled = true;
+                button.textContent = "Sender...";
+
+                // Send Email via EmailJS
+                emailjs.send("service_5jpmtkn", "template_olhjiu7", templateParams)
+                    .then(() => {
+                        alert("✅ Bestillingen ble sendt til kantina!");
+                        form.submit();
+                    })
+                    .catch((error) => {
+                        alert("❌ Klarte ikke å sende e-post: " + JSON.stringify(error));
+                        form.submit();
+                    })
+                    .finally(() => {
+                        button.disabled = false;
+                        button.textContent = "Send bestilling";
+                    });
+            });
+        });
+    </script>
+
+
 </body>
 
 </html>
