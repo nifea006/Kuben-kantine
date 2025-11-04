@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    {% include "_navbar.html" %}
+
+    <h2>Bestillingadministrasjon</h2>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Bestillings-ID</th>
+            <th>Bruker-ID</th>
+            <th>Ordre</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Status levert</th>
+            <th>Status fakturert</th>
+        </tr>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.user_id }}</td>
+            <td>
+                <pre>{{ order.ordre }}</pre>
+            </td>
+            <td>{{ order.total }}</td>
+            <td>{{ order.status }}</td>
+            <td>{{ '✔️' if order.status_levert else '❌' }}</td>
+            <td>{{ '✔️' if order.status_fakturert else '❌' }}</td>
+        </tr>
+        {% endfor %}
+
+</body>
+
+</html>

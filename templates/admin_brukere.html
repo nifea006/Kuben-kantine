@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Administrer brukere - Kuben Kantine</title>
+</head>
+
+<body>
+    {% include "_navbar.html" %}
+    <h2>Brukeradministrasjon</h2>
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Navn</th>
+            <th>E-post</th>
+            <th>Roller</th>
+            <th>Oppdater</th>
+        </tr>
+        {% for u in users %}
+        <tr>
+            <form method="POST">
+                <td>{{ u.navn }}</td>
+                <td>{{ u.epost }}</td>
+                <td>
+                    <input type="hidden" name="id" value="{{ u.id }}">
+                    <label><input type="checkbox" name="rolle_personlig" {% if u.rolle_personlig %}checked{% endif %}>
+                        Personlig</label>
+                    <label><input type="checkbox" name="rolle_okonomi" {% if u.rolle_okonomi %}checked{% endif %}>
+                        Økonomi</label>
+                    <label><input type="checkbox" name="rolle_kjokken" {% if u.rolle_kjokken %}checked{% endif %}>
+                        Kjøkken</label>
+                    <label><input type="checkbox" name="rolle_admin" {% if u.rolle_admin %}checked{% endif %}>
+                        Admin</label>
+                </td>
+                <td><button type="submit">💾 Lagre</button></td>
+            </form>
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+
+</html>

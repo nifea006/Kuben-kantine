@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ferdige bestillinger - Kuben Kantine</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+    {% include "_navbar.html" %}
+
+    <h1>Bestillinger klare for fakturering</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Navn</th>
+            <th>Koststed</th>
+            <th>Dato</th>
+            <th>Sum (kr)</th>
+            <th>Handling</th>
+        </tr>
+        {% for o in orders %}
+        <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.navn }}</td>
+            <td>{{ o.koststed }}</td>
+            <td>{{ o.hent_dato }}</td>
+            <td>
+                {% set ordre = o.ordre | fromjson %}
+                {{ ordre.values() | map(attribute='sum') | sum }}
+            </td>
+            <td>
+                <a href="/vis-bestilling/{{ o.id }}">Vis</a>
+                <form method="POST" action="/sett-fakturert/{{ o.id }}" style="display:inline;">
+                    <button type="submit">📦 Merk som fakturert</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="back-link">
+        <a href="/main?role=accountant">← Tilbake til hovedmeny</a>
+    </div>
+</body>
+
+</html>

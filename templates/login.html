@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Logg inn</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+</head>
+
+<body>
+    {% include "_navbar.html" %}
+
+    <h2>Logg inn (test)</h2>
+    <form method="POST">
+        <label>Navn:</label><br>
+        <input type="text" name="navn" required><br><br>
+
+        <label>E-post:</label><br>
+        <input type="email" name="email" required><br><br>
+
+        <button type="submit">Logg inn</button>
+    </form>
+</body>
+
+</html>

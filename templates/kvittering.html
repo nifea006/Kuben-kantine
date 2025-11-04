@@ -8,13 +8,14 @@
 </head>
 
 <body>
+    {% include "_navbar.html" %}
 
     <div class="receipt">
         <h1>Kvittering for bestilling</h1>
         <p><strong>Navn:</strong> {{ order.navn }}</p>
         <p><strong>Mobil:</strong> {{ order.mobil }}</p>
         <p><strong>Organisasjonsnummer:</strong> {{ order.organisasjonsnummer }}</p>
-        <p><strong>Fakturaadresse:</strong> {{order.fakturaadresse }}</p>
+        <p><strong>Fakturaadresse:</strong> {{ order.fakturaadresse }}</p>
         <p><strong>E-post:</strong> {{ order.epost }}</p>
         <p><strong>Ressursnummer:</strong> {{ order.ressursnummer }}</p>
         <p><strong>Koststed:</strong> {{ order.koststed }}</p>

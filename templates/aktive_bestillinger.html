@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Aktive bestillinger - Kuben Kantine</title>
+    <link rel="stylesheet" href="../static/css/style.css">
+    <style>
+        form {
+            display: inline;
+        }
+
+        .delivered {
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "_navbar.html" %}
+
+    <h1>Aktive bestillinger</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Navn</th>
+            <th>Hentetid</th>
+            <th>Koststed</th>
+            <th>Handling</th>
+        </tr>
+        {% for o in orders %}
+        <tr>
+            <td>{{ o.id }}</td>
+            <td>{{ o.navn }}</td>
+            <td>{{ o.hent_dato }} {{ o.hent_tid }}</td>
+            <td>{{ o.koststed }}</td>
+            <td>
+                <a href="/vis-bestilling/{{ o.id }}">Vis</a>
+                <form method="POST" action="/sett-levert/{{ o.id }}">
+                    <button type="submit">✔️ Sett som levert</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="back-link">
+        <a href="/main?role=cook">← Tilbake til hovedmeny</a>
+    </div>
+</body>
+
+</html>
