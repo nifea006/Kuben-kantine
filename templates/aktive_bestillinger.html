@@ -4,24 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Aktive bestillinger - Kuben Kantine</title>
-    <link rel="stylesheet" href="../static/css/style.css">
-    <style>
-        form {
-            display: inline;
-        }
-
-        .delivered {
-            text-decoration: line-through;
-            color: gray;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
     {% include "_navbar.html" %}
 
     <h1>Aktive bestillinger</h1>
-    <table>
+    <table border="1" cellpadding="8">
         <tr>
             <th>ID</th>
             <th>Navn</th>
@@ -33,11 +23,11 @@
         <tr>
             <td>{{ o.id }}</td>
             <td>{{ o.navn }}</td>
-            <td>{{ o.hent_dato }} {{ o.hent_tid }}</td>
+            <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid }}</td>
             <td>{{ o.koststed }}</td>
             <td>
-                <a href="/vis-bestilling/{{ o.id }}">Vis</a>
-                <form method="POST" action="/sett-levert/{{ o.id }}">
+                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
+                <form method="POST" action="/sett-levert/{{ o.id }}" class="inline-form">
                     <button type="submit">✔️ Sett som levert</button>
                 </form>
             </td>
@@ -45,9 +35,6 @@
         {% endfor %}
     </table>
 
-    <div class="back-link">
-        <a href="/main?role=cook">← Tilbake til hovedmeny</a>
-    </div>
 </body>
 
 </html>

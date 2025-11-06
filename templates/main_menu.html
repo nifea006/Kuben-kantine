@@ -1,38 +1,39 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 
 <head>
     <meta charset="UTF-8">
     <title>Kuben Kantine - Hovedmeny</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
     {% include "_navbar.html" %}
 
-    <h1>Velkommen til Kuben Kantine</h1>
-    <h2>Velg hva du vil gjøre</h2>
+    <div class="centered-page">
+        <h1>Velkommen til Kuben Kantine</h1>
+        <h2>Velg hva du vil gjøre</h2>
 
-    {% if role == 'personlig' %}
-    <ul>
-        <li><a href="/bestill">Lag ny bestilling</a></li>
-        <li><a href="/mine-bestillinger">Se status</a></li>
-    </ul>
-    {% elif role == 'kjokken' %}
-    <ul>
-        <li><a href="/aktive-bestillinger">Levere bestillinger</a></li>
-    </ul>
-    {% elif role == 'okonomi' %}
-    <ul>
-        <li><a href="/ferdige-bestillinger">Fakturere bestillinger</a></li>
-    </ul>
-    {% elif role == 'admin' %}
-    <ul>
-        <li><a href="/admin-brukere">Administrer brukere</a></li>
-        <li><a href="/admin-bestillinger">Se alle bestillinger</a></li>
-    </ul>
-    {% endif %}
-
+        {% if role == 'personlig' %}
+        <ul>
+            <li><a href="/bestill"><button>🍽️ Lag ny bestilling</button></a></li>
+            <li><a href="/mine-bestillinger"><button>📋 Se status</button></a></li>
+        </ul>
+        {% elif role == 'kjokken' %}
+        <ul>
+            <li><a href="/aktive-bestillinger"><button>👨‍🍳 Levere bestillinger</button></a></li>
+        </ul>
+        {% elif role == 'okonomi' %}
+        <ul>
+            <li><a href="/ferdige-bestillinger"><button>💼 Fakturere bestillinger</button></a></li>
+        </ul>
+        {% elif role == 'admin' %}
+        <ul>
+            <li><a href="/admin-brukere"><button>🛠️ Administrer brukere</button></a></li>
+            <li><a href="/admin-bestillinger"><button>📦 Se alle bestillinger</button></a></li>
+        </ul>
+        {% endif %}
+    </div>
 </body>
 
 </html>

@@ -4,24 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Velg rolle - Kuben Kantine</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
-    {% include "_navbar.html" %}
+    <div class="centered-page">
+        <h1>Hei {{ navn }} 👋</h1>
+        <p>Du har flere roller. Hva vil du gjøre i dag?</p>
 
-    <h1>Hei {{ navn }} 👋</h1>
-    <p>Du har flere roller. Hva vil du gjøre i dag?</p>
-    <form method="POST" action="/sett_rolle">
-        {% for r in roles %}
-        <button type="submit" name="rolle" value="{{ r }}">
-            {% if r == 'personlig' %}🍽️ Bestille mat{% endif %}
-            {% if r == 'kjokken' %}👨‍🍳 Levere bestillinger{% endif %}
-            {% if r == 'okonomi' %}💼 Fakturere bestillinger{% endif %}
-            {% if r == 'admin' %}🛠️ Administrere nettstedet{% endif %}
-        </button>
-        {% endfor %}
-    </form>
+        <form method="POST" action="/sett_rolle">
+            {% for r in roles %}
+            <ul>
+                <button type="submit" name="rolle" value="{{ r }}">
+                    {% if r == 'personlig' %}🍽️ Bestille mat{% endif %}
+                    {% if r == 'kjokken' %}👨‍🍳 Levere bestillinger{% endif %}
+                    {% if r == 'okonomi' %}💼 Fakturere bestillinger{% endif %}
+                    {% if r == 'admin' %}🛠️ Administrere nettstedet{% endif %}
+                </button>
+            </ul>
+            {% endfor %}
+        </form>
+    </div>
 </body>
 
 </html>

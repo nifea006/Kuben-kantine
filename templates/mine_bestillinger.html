@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Mine bestillinger</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
     {% include "_navbar.html" %}
 
     <h1>Mine bestillinger</h1>
-    <table>
+    <table border="1" cellpadding="8">
         <tr>
             <th>ID</th>
             <th>Dato</th>
@@ -23,7 +23,7 @@
         {% for o in orders %}
         <tr>
             <td>{{ o.id }}</td>
-            <td>{{ o.hent_dato }}</td>
+            <td>{{ o.hent_dato | format_date }}</td>
             <td>{{ o.hent_tid }}</td>
             <td>{{ o.koststed }}</td>
             <td>
@@ -35,9 +35,6 @@
         {% endfor %}
     </table>
 
-    <div class="back-link">
-        <a href="/main?role=teacher">← Tilbake til hovedmeny</a>
-    </div>
 </body>
 
 </html>

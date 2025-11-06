@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Ferdige bestillinger - Kuben Kantine</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
     {% include "_navbar.html" %}
 
     <h1>Bestillinger klare for fakturering</h1>
-    <table>
+    <table border="1" cellpadding="8">
         <tr>
             <th>ID</th>
             <th>Navn</th>
@@ -31,7 +31,7 @@
                 {{ ordre.values() | map(attribute='sum') | sum }}
             </td>
             <td>
-                <a href="/vis-bestilling/{{ o.id }}">Vis</a>
+                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
                 <form method="POST" action="/sett-fakturert/{{ o.id }}" style="display:inline;">
                     <button type="submit">📦 Merk som fakturert</button>
                 </form>
@@ -40,9 +40,6 @@
         {% endfor %}
     </table>
 
-    <div class="back-link">
-        <a href="/main?role=accountant">← Tilbake til hovedmeny</a>
-    </div>
 </body>
 
 </html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Kvittering - Kuben Kantine</title>
-    <link rel="stylesheet" href="../static/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
@@ -19,13 +19,13 @@
         <p><strong>E-post:</strong> {{ order.epost }}</p>
         <p><strong>Ressursnummer:</strong> {{ order.ressursnummer }}</p>
         <p><strong>Koststed:</strong> {{ order.koststed }}</p>
-        <p><strong>Dato for henting:</strong> {{ order.hent_dato }}</p>
+        <p><strong>Dato for henting:</strong> {{ order.hent_dato | format_date }}</p>
         <p><strong>Tidspunkt:</strong> {{ order.hent_tid }}</p>
         <p><strong>Spise i kantina:</strong> {{ order.spise_i_kantina }}</p>
         <p><strong>Melding:</strong> {{ order.melding }}</p>
 
         <h3>Bestilte varer</h3>
-        <table>
+        <table border="1" cellpadding="8">
             <tr>
                 <th>Produkt</th>
                 <th>Antall</th>
@@ -43,11 +43,6 @@
         </table>
 
         <p class="total">Totalt: {{ order.total }} kr</p>
-
-        <div class="back-link">
-            <a href="/">← Ny bestilling</a>
-        </div>
-    </div>
 
 </body>
 

@@ -3,8 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Administrer bestillingene - Kuben Kantine</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
@@ -14,27 +14,33 @@
 
     <table border="1" cellpadding="8">
         <tr>
-            <th>Bestillings-ID</th>
-            <th>Bruker-ID</th>
-            <th>Ordre</th>
-            <th>Total</th>
-            <th>Status</th>
-            <th>Status levert</th>
-            <th>Status fakturert</th>
+            <th>Order ID</th>
+            <th>Bruker ID</th>
+            <th>Navn</th>
+            <th>E-post</th>
+            <th>Koststed</th>
+            <th>Dato</th>
+            <th>Total (kr)</th>
+            <th>Levert</th>
+            <th>Fakturert</th>
+            <th>Handling</th>
         </tr>
-        {% for order in orders %}
+        {% for o in orders %}
         <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.user_id }}</td>
-            <td>
-                <pre>{{ order.ordre }}</pre>
-            </td>
-            <td>{{ order.total }}</td>
-            <td>{{ order.status }}</td>
-            <td>{{ '✔️' if order.status_levert else '❌' }}</td>
-            <td>{{ '✔️' if order.status_fakturert else '❌' }}</td>
+            <td>{{ o.id }}</td>
+            <td>{{ o.user_id }}</td>
+            <td>{{ o.navn }}</td>
+            <td>{{ o.epost }}</td>
+            <td>{{ o.koststed }}</td>
+            <td>{{ o.hent_dato }}</td>
+            <td>{{ o.total }}</td>
+            <td>{{ '✔️' if o.status_levert else '❌' }}</td>
+            <td>{{ '✔️' if o.status_fakturert else '❌' }}</td>
+            <td><a href="/vis-bestilling/{{ o.id }}">Vis</a></td>
         </tr>
         {% endfor %}
+    </table>
+
 
 </body>
 

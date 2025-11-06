@@ -1,24 +1,44 @@
-<nav style="background:#eee; padding:10px; border-radius:10px;">
-    {% if 'user' in session %}
-        <b>{{ session['user']['navn'] }}</b>
-        {% if 'active_role' in session %}
-            (rolle: {{ session['active_role']|capitalize }})
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+<nav class="navbar">
+    <ul>
+        {% if g.current_endpoint != 'main_menu' %}
+        <li><a href="{{ url_for('main_menu') }}">🏠 Hovedmeny</a></li>
         {% endif %}
-    {% else %}
-        <b>Ikke logget inn</b>
-    {% endif %}
-    |
-    <a href="{{ url_for('main_menu') }}">Hjem</a> |
-    {% if session.get('active_role') == 'personlig' %}
-        <a href="{{ url_for('bestill') }}">Bestill</a> |
-        <a href="{{ url_for('mine_bestillinger') }}">Mine bestillinger</a> |
-    {% elif session.get('active_role') == 'kjokken' %}
-        <a href="{{ url_for('aktive_bestillinger') }}">Aktive bestillinger</a> |
-    {% elif session.get('active_role') == 'okonomi' %}
-        <a href="{{ url_for('ferdige_bestillinger') }}">Ferdige bestillinger</a> |
-    {% elif session.get('active_role') == 'admin' %}
-        <a href="{{ url_for('admin_brukere') }}">Brukeradministrasjon</a> |
-    {% endif %}
-    <a href="{{ url_for('login') }}">Bytt bruker</a>
+
+        <!-- Personlig navbar -->
+        {% if session.get('active_role') == 'personlig' %}
+        {% if g.current_endpoint != 'bestill' %}
+        <li><a href="{{ url_for('bestill') }}">🍽️ Ny bestilling</a></li>
+        {% endif %}
+        {% if g.current_endpoint != 'mine_bestillinger' %}
+        <li><a href="{{ url_for('mine_bestillinger') }}">📋 Mine bestillinger</a></li>
+        {% endif %}
+
+        <!-- Kjøkken navbar -->
+        {% elif session.get('active_role') == 'kjokken' %}
+        {% if g.current_endpoint != 'aktive_bestillinger' %}
+        <li><a href="{{ url_for('aktive_bestillinger') }}">👨‍🍳 Aktive bestillinger</a></li>
+        {% endif %}
+
+        <!-- Økonomi navbar -->
+        {% elif session.get('active_role') == 'okonomi' %}
+        {% if g.current_endpoint != 'ferdige_bestillinger' %}
+        <li><a href="{{ url_for('ferdige_bestillinger') }}">💼 Ferdige bestillinger</a></li>
+        {% endif %}
+
+        <!-- Admin navbar -->
+        {% elif session.get('active_role') == 'admin' %}
+        {% if g.current_endpoint != 'admin_brukere' %}
+        <li><a href="{{ url_for('admin_brukere') }}">🛠️ Brukere</a></li>
+        {% endif %}
+        {% if g.current_endpoint != 'admin_bestillinger' %}
+        <li><a href="{{ url_for('admin_bestillinger') }}">📦 Alle bestillinger</a></li>
+        {% endif %}
+
+        {% endif %}
+
+        <li style="margin-left:auto;"><a href="{{ url_for('velg_rolle') }}">⇄ Bytt rolle</a></li>
+        <li><a href="{{ url_for('login') }}">🚪 Logg ut</a></li>
+    </ul>
 </nav>
-<hr>
