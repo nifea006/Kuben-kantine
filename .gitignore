@@ -1,0 +1,12 @@
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore environment and private info
+.env
+
+# Ignore local database or secret configs
+instance/
+
+# Ignore client secrets
+./static/js/client_secrets.json

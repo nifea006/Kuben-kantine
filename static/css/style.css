@@ -1,118 +1,156 @@
+/* ====== Global Layout ====== */
 body {
-    font-family: Arial, sans-serif;
-    margin: 40px;
+    font-family: 'Segoe UI', Arial, sans-serif;
     background-color: #f8f9fa;
     color: #333;
+    margin: 30px auto;
+    max-width: 1200px;
+    line-height: 1.6;
 }
 
 h1,
-h2,
 h3 {
-    color: #333;
+    color: #222;
+    margin-bottom: 10px;
 }
 
-form {
+a {
+    color: #0078d4;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* ===== Navbar Styling ===== */
+.navbar {
+    background-color: #0078d4;
+    padding: 10px 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+}
+
+.navbar ul {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 6px 10px;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.navbar a:hover {
+    background-color: #005ea6;
+}
+
+/* ====== Tables ====== */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
+}
+
+th,
+td {
+    border-bottom: 1px solid #e6e6e6;
+    padding: 10px 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* ====== Forms ====== */
+.form-box-style {
     background: white;
     padding: 25px 30px;
     border-radius: 10px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    max-width: 1200px;
-    margin: auto;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
+    margin-bottom: 40px;
 }
 
+.inline-form {
+    display: inline;
+}
+
+label {
+    display: inline-block;
+    font-weight: 500;
+    margin-bottom: 6px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+button:hover {
+    background-color: #005ea6;
+}
+
+/* ====== Page Sections ====== */
 .bruker-info {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    gap: 30px;
     flex-wrap: wrap;
-    gap: 40px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
 }
 
 .Kundeinformasjon,
 .Henting {
     flex: 1;
-    min-width: 400px;
+    max-height: min-content;
+    min-width: 350px;
     background-color: #f4f4f6;
     padding: 15px 20px;
     border-radius: 8px;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.05);
-}
-
-.Kundeinformasjon h2,
-.Henting h2 {
-    margin-bottom: 10px;
-    border-bottom: 1px solid;
-    padding-bottom: 5px;
-}
-
-.form-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-label {
-    flex: 0 0 180px;
-    font-weight: 500;
-}
-
-input[type="checkbox"] {
-    margin-right: 5px;
-}
-
-input[type="date"],
-input[type="time"],
-input[name="antall_personer"] {
-    flex: 1;
-    padding: 6px;
-    border-radius: 5px;
-    border: 1px solid;
-    font-size: 14px;
-}
-
-.Kundeinformasjon-fillout {
-    flex: 1;
-    padding: 6px;
-    border-radius: 5px;
-    border: 1px solid;
-    font-size: 14px;
-}
-
-#select-input {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: max-content;
-}
-
-#koststedSelect {
-    margin-bottom: 10px;
-}
-
-h3 {
-    margin-top: 25px;
-    border-bottom: 1px solid ;
-    padding-bottom: 3px;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
 .menu-table {
-    border-collapse: collapse;
-    width: 100%;
-    margin-bottom: 20px;
-    font-size: 15px;
-}
-
-.menu-table th,
-.menu-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.menu-table th {
-    background-color: #f2f2f2;
+    font-size: 14px;
 }
 
 .menu-table input {
@@ -121,33 +159,7 @@ h3 {
     text-align: center;
 }
 
-
-
-textarea {
-    width: 100%;
-    padding: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-
-button {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #0078d4;
-    border: none;
-    border-radius: 6px;
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-button:hover {
-    background-color: #005ea6;
-}
-
-
-
+/* ====== Utility ====== */
 .receipt {
     background: white;
     padding: 30px;
@@ -157,42 +169,61 @@ button:hover {
     margin: 40px auto;
 }
 
-.receipt h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.receipt table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-}
-
-.receipt th,
-.receipt td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.receipt th {
-    background-color: #f2f2f2;
-}
-
 .total {
     text-align: right;
     font-weight: bold;
-    padding-top: 10px;
+    margin-top: 10px;
 }
 
-.back-link {
+/* ====== Role Buttons ====== */
+form button[name="rolle"] {
+    margin: 10px;
+    width: 220px;
+}
+
+/* ====== Centered Page Layouts ====== */
+.centered-page {
+    display: flex;
+    flex-direction: column;
+    justify-self: center;
+    align-items: center;
+    min-height: 60vh;
     text-align: center;
-    margin-top: 20px;
+    background: white;
+    padding: 25px 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
 }
 
+.centered-page h1 {
+    margin-bottom: 10px;
+}
 
+.centered-page h2 {
+    color: #555;
+    margin-bottom: 10px;
+}
 
-@media (max-width: 1000px) {
+.centered-page ul {
+    list-style: none;
+    padding: 0;
+}
+
+.centered-page li {
+    margin: 10px 0;
+}
+
+.centered-page button {
+    width: 220px;
+    margin: 10px 0;
+}
+
+/* ====== Responsive Design ====== */
+@media (max-width: 900px) {
+    body {
+        margin: 20px;
+    }
+
     .bruker-info {
         flex-direction: column;
     }
@@ -202,32 +233,12 @@ button:hover {
         min-width: 100%;
     }
 
-    .Henting {
-        margin-top: 20px;
-    }
-}
-
-@media (max-width: 700px) {
-    form {
-        padding: 15px;
-    }
-
-    label {
-        flex: 0 0 120px;
+    nav {
         font-size: 14px;
+        padding: 10px;
     }
 
-    input,
-    select {
-        font-size: 13px;
-    }
-
-    .menu-table th:nth-child(1),
-    .menu-table td:nth-child(1) {
-        display: none;
-    }
-
-    .menu-table {
+    table {
         font-size: 13px;
         overflow-x: auto;
         display: block;
