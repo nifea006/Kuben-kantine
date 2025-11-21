@@ -41,7 +41,6 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_KANTINE = os.getenv("DB_KANTINE")
-DB_BRUKERE=os.getenv("DB_BRUKERE")
 
 # Database connection
 def get_connection_kantine():
@@ -223,7 +222,7 @@ def admin_brukere():
     users = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("admin_brukere.html", users=users)
+    return render_template("admin/admin_brukere.html", users=users)
 
 @app.route("/sett_rolle", methods=["POST"])
 def sett_rolle():
@@ -232,9 +231,17 @@ def sett_rolle():
     return redirect(url_for("main_menu"))
 
 
-@app.route("/bestill")
-def bestill():
-    return render_template("bestillingsskjema.html")
+@app.route("/velg-stedet")
+def velg_stedet():
+    return render_template("personlig/velg_stedet.html")
+
+@app.route("/bestille-fra-kantina")
+def bestille_fra_kantina():
+    return render_template("personlig/bestille_fra_kantina.html")
+
+@app.route("/bestille-fra-WAKEUP")
+def bestille_fra_WAKEUP():
+    return render_template("personlig/bestille_fra_WAKEUP.html")
 
 
 @app.route("/mine-bestillinger")
@@ -252,10 +259,10 @@ def mine_bestillinger():
     
     cursor.close()
     conn.close()
-    return render_template("mine_bestillinger.html", orders=orders)
+    return render_template("personlig/mine_bestillinger.html", orders=orders)
 
-@app.route("/aktive-bestillinger")
-def aktive_bestillinger():
+@app.route("/aktive-bestillinger-i-kantinen")
+def aktive_bestillinger_i_kantinen():
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
@@ -266,7 +273,7 @@ def aktive_bestillinger():
     orders = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("aktive_bestillinger.html", orders=orders)
+    return render_template("kjokken/aktive_bestillinger_i_kantinen.html", orders=orders)
 
 @app.route("/sett-levert/<int:order_id>", methods=["POST"])
 def sett_levert(order_id):
@@ -276,7 +283,7 @@ def sett_levert(order_id):
     conn.commit()
     cursor.close()
     conn.close()
-    return redirect(url_for("aktive_bestillinger"))
+    return redirect(url_for("aktive_bestillinger_i_kantinen"))
 
 
 @app.route("/ferdige-bestillinger")
@@ -291,7 +298,7 @@ def ferdige_bestillinger():
     orders = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("ferdige_bestillinger.html", orders=orders)
+    return render_template("okonomi/ferdige_bestillinger.html", orders=orders)
 
 @app.route("/sett-fakturert/<int:order_id>", methods=["POST"])
 def sett_fakturert(order_id):
@@ -352,7 +359,7 @@ def admin_bestillinger():
             o["total"] = 0
         o["user_id"] = user_map.get(o["epost"], "Ukjent")
 
-    return render_template("admin_bestillinger.html", orders=orders)
+    return render_template("admin/admin_bestillinger.html", orders=orders)
 
 
 @app.route('/submit', methods=['POST'])
@@ -375,7 +382,7 @@ def submit():
     antall_personer = request.form.get('antall_personer', '').strip()
     spise_i_kantina = f"Ja, {antall_personer} personer" if spise_i_kantina_bool else "Nei"
 
-    priser = {
+    meny = {
         "antall_Kaffekanne_1l": {"navn": "Kaffekanne 1 liter", "pris": 90},
         "antall_Kaffekontainer_5l": {"navn": "Kaffekontainer 5 liter", "pris": 250},
         "antall_Brus": {"navn": "Brus", "pris": 35},
@@ -399,11 +406,11 @@ def submit():
     ordre = {}
     total = 0
     for key, val in request.form.items():
-        if key in priser and val and int(val) > 0:
+        if key in meny and val and int(val) > 0:
             antall = int(val)
-            pris = priser[key]["pris"]
+            pris = meny[key]["pris"]
             sum_vare = antall * pris
-            ordre[priser[key]["navn"]] = {"antall": antall, "pris": pris, "sum": sum_vare}
+            ordre[meny[key]["navn"]] = {"antall": antall, "pris": pris, "sum": sum_vare}
             total += sum_vare
 
     try:

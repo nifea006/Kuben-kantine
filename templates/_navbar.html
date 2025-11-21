@@ -8,8 +8,14 @@
 
         <!-- Personlig navbar -->
         {% if session.get('active_role') == 'personlig' %}
-        {% if g.current_endpoint != 'bestill' %}
-        <li><a href="{{ url_for('bestill') }}">🍽️ Ny bestilling</a></li>
+        {% if g.current_endpoint != 'velg_stedet' %}
+        <li><a href="{{ url_for('velg_stedet') }}">🍽️ Ny bestilling</a></li>
+        {% endif %}
+        {% if g.current_endpoint != 'bestille_fra_kantina' %}
+        <li><a href="{{ url_for('bestille_fra_kantina') }}">🪑 Bestille fra kantina</a></li>
+        {% endif %}
+        {% if g.current_endpoint != 'bestille_fra_WAKEUP' %}
+        <li><a href="{{ url_for('bestille_fra_WAKEUP') }}">🏪 Bestille fra WAKEUP</a></li>
         {% endif %}
         {% if g.current_endpoint != 'mine_bestillinger' %}
         <li><a href="{{ url_for('mine_bestillinger') }}">📋 Mine bestillinger</a></li>
@@ -17,8 +23,8 @@
 
         <!-- Kjøkken navbar -->
         {% elif session.get('active_role') == 'kjokken' %}
-        {% if g.current_endpoint != 'aktive_bestillinger' %}
-        <li><a href="{{ url_for('aktive_bestillinger') }}">👨‍🍳 Aktive bestillinger</a></li>
+        {% if g.current_endpoint != 'aktive_bestillinger_i_kantinen' %}
+        <li><a href="{{ url_for('aktive_bestillinger_i_kantinen') }}">👨‍🍳 Aktive bestillinger</a></li>
         {% endif %}
 
         <!-- Økonomi navbar -->
