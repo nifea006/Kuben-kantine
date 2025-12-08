@@ -34,21 +34,21 @@ def format_date(value):
 
 app.jinja_env.filters['format_date'] = format_date
 
-app.secret_key = "supersecret"
-
 # Read environment variables
 DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_KANTINE = os.getenv("DB_KANTINE")
 
+# ----- Fill out your database connection settings ----- #
+
 # Database connection
 def get_connection_kantine():
     return mysql.connector.connect(
-        host=DB_HOST,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_KANTINE
+        host=DB_HOST or "localhost",
+        user=DB_USER or "your_user_name",
+        password=DB_PASSWORD or "your_password",
+        database=DB_KANTINE or "your_database_name"
     )
 
 # Create user table if not exists
