@@ -1,4 +1,5 @@
 # Kuben Cafeteria – Teacher Page
+
 This project is a practice assignment from Kuben VGS, where the task was to create a new webpage
 for the school cafeteria, specifically designed for teachers.
 
@@ -7,6 +8,7 @@ for the school cafeteria, specifically designed for teachers.
 ## How to Run the Project
 
 ### 1. Install Dependencies
+
 After opening the project folder in your code editor, install the required Python dependencies.
 
 It is recommended (but optional) to use a virtual environment so you don’t clutter your global Python installation.
@@ -28,6 +30,7 @@ If you don’t have the `requirements.txt`, install manually:
 ---
 
 ## Database Setup (MariaDB / MySQL)
+
 To run the webpage, you must use a MySQL-based database (such as MariaDB).
 
 1. Create a new database in MariaDB/MySQL.  
@@ -48,6 +51,7 @@ Make sure these match your local database configuration.
 ---
 
 ## Running the Project
+
 After installing dependencies and configuring the database, you can start the server with:
 
     python app.py
@@ -55,5 +59,3 @@ After installing dependencies and configuring the database, you can start the se
 Then open your browser and visit:
 
     http://127.0.0.1:5000/
-
-  

@@ -39,16 +39,19 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_KANTINE = os.getenv("DB_KANTINE")
+SECRET_KEY = os.getenv("SECRET_KEY") or "supersecretkey"
+
+app.secret_key = SECRET_KEY
 
 # ----- Fill out your database connection settings ----- #
 
 # Database connection
 def get_connection_kantine():
     return mysql.connector.connect(
-        host=DB_HOST or "localhost",
-        user=DB_USER or "your_user_name",
-        password=DB_PASSWORD or "your_password",
-        database=DB_KANTINE or "your_database_name"
+        host = DB_HOST or "localhost",
+        user = DB_USER or "your_user_name",
+        password = DB_PASSWORD or "your_password",
+        database = DB_KANTINE or "your_database_name"
     )
 
 # Create user table if not exists
@@ -69,6 +72,8 @@ def create_orders_table():
                 hent_dato DATE,
                 hent_tid TIME,
                 spise_i_kantina VARCHAR(50),
+                status_levert BOOLEAN,
+                status_fakturert BOOLEAN,
                 melding TEXT,
                 ordre TEXT
             )
