@@ -8,9 +8,9 @@
 
         <!-- Personlig navbar -->
         {% if session.get('active_role') == 'personlig' %}
-        {% if g.current_endpoint != 'velg_stedet' %}
+        <!-- {% if g.current_endpoint != 'velg_stedet' %}
         <li><a href="{{ url_for('velg_stedet') }}">🍽️ Ny bestilling</a></li>
-        {% endif %}
+        {% endif %} -->
         {% if g.current_endpoint != 'bestille_fra_kantina' %}
         <li><a href="{{ url_for('bestille_fra_kantina') }}">🪑 Bestille fra kantina</a></li>
         {% endif %}

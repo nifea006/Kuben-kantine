@@ -82,9 +82,45 @@ def create_orders_table():
         cursor.close()
         conn.close()
     except Error as e:
-        print("Feil ved oppretting av tabell:", e)
+        print("Feil ved oppretting av orders-tabell:", e)
 
 create_orders_table()
+
+def create_menu_tables():
+    try:
+        conn = get_connection_kantine()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS menu_kantine (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                category VARCHAR(100) DEFAULT 'Ukjent',
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                price DECIMAL(8,2) DEFAULT 0,
+                image_url VARCHAR(255),
+                position INT DEFAULT 0,
+                active BOOLEAN DEFAULT TRUE
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS menu_wakeup (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                category VARCHAR(100) DEFAULT 'Ukjent',
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                price DECIMAL(8,2) DEFAULT 0,
+                image_url VARCHAR(255),
+                position INT DEFAULT 0,
+                active BOOLEAN DEFAULT TRUE
+            )
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Error as e:
+        print("Feil ved oppretting av menu-tabeller:", e)
+
+create_menu_tables()
 
 # Create user table if not exists
 def create_user_table():
@@ -101,13 +137,12 @@ def create_user_table():
                 rolle_kjokken BOOLEAN DEFAULT FALSE,
                 rolle_admin BOOLEAN DEFAULT FALSE
             )
-
         """)
         conn.commit()
         cursor.close()
         conn.close()
     except Error as e:
-        print("Feil ved oppretting av tabell:", e)
+        print("Feil ved oppretting av users-tabell:", e)
 
 create_user_table()
 
@@ -119,7 +154,9 @@ def before_request():
 
 @app.route("/")
 def home():
-    return redirect(url_for("login"))
+    if "user" not in session:
+        return redirect(url_for("login"))
+    return redirect(url_for("main_menu"))
 
 
 @app.route("/main")
@@ -195,6 +232,8 @@ def velg_rolle():
 
 @app.route("/admin-brukere", methods=["GET", "POST"])
 def admin_brukere():
+    if session.get("active_role") != "admin":
+        return redirect(url_for("login"))
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
 
@@ -236,19 +275,6 @@ def sett_rolle():
     return redirect(url_for("main_menu"))
 
 
-@app.route("/velg-stedet")
-def velg_stedet():
-    return render_template("personlig/velg_stedet.html")
-
-@app.route("/bestille-fra-kantina")
-def bestille_fra_kantina():
-    return render_template("personlig/bestille_fra_kantina.html")
-
-@app.route("/bestille-fra-WAKEUP")
-def bestille_fra_WAKEUP():
-    return render_template("personlig/bestille_fra_WAKEUP.html")
-
-
 @app.route("/mine-bestillinger")
 def mine_bestillinger():
     user = session.get("user")
@@ -268,6 +294,8 @@ def mine_bestillinger():
 
 @app.route("/aktive-bestillinger-i-kantinen")
 def aktive_bestillinger_i_kantinen():
+    if session.get("active_role") != "kjokken":
+        return redirect(url_for("login"))
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
@@ -282,6 +310,8 @@ def aktive_bestillinger_i_kantinen():
 
 @app.route("/sett-levert/<int:order_id>", methods=["POST"])
 def sett_levert(order_id):
+    if session.get("active_role") != "kjokken":
+        return redirect(url_for("login"))
     conn = get_connection_kantine()
     cursor = conn.cursor()
     cursor.execute("UPDATE orders SET status_levert = TRUE WHERE id = %s", (order_id,))
@@ -293,6 +323,8 @@ def sett_levert(order_id):
 
 @app.route("/ferdige-bestillinger")
 def ferdige_bestillinger():
+    if session.get("active_role") != "okonomi":
+        return redirect(url_for("login"))
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
@@ -307,6 +339,8 @@ def ferdige_bestillinger():
 
 @app.route("/sett-fakturert/<int:order_id>", methods=["POST"])
 def sett_fakturert(order_id):
+    if session.get("active_role") != "okonomi":
+        return redirect(url_for("login"))
     conn = get_connection_kantine()
     cursor = conn.cursor()
     cursor.execute("UPDATE orders SET status_fakturert = TRUE WHERE id = %s", (order_id,))
@@ -340,6 +374,8 @@ def vis_bestilling(order_id):
 
 @app.route('/admin-bestillinger', methods=['GET'])
 def admin_bestillinger():
+    if session.get("active_role") != "admin":
+        return redirect(url_for("login"))
     conn_kantine = get_connection_kantine()
     cursor_kantine = conn_kantine.cursor(dictionary=True)
     cursor_kantine.execute("SELECT * FROM orders ORDER BY id DESC")
@@ -366,6 +402,213 @@ def admin_bestillinger():
 
     return render_template("admin/admin_bestillinger.html", orders=orders)
 
+@app.route("/rediger-meny/<menu_name>")
+def rediger_meny_edit(menu_name):
+    if session.get("active_role") != "kjokken":
+        return redirect(url_for("login"))
+    if menu_name not in ("kantine", "wakeup"):
+        return "Ukjent meny", 404
+
+    items = get_all_menu_items(menu_name)
+    categories = {}
+    for it in items:
+        categories.setdefault(it["category"] or "Ukjent", []).append(it)
+
+    return render_template("kjokken/rediger_meny.html", categories=categories, menu_name=menu_name)
+
+    if session.get("active_role") != "kjokken":
+        return redirect(url_for("login"))
+    if menu_name not in ("kantine", "wakeup"):
+        return "Ukjent meny", 404
+    items = get_all_menu_items(menu_name)
+    categories = {}
+    for it in items:
+        categories.setdefault(it["category"] or "Ukjent", []).append(it)
+    template = "kjokken/rediger_kantine_meny.html" if menu_name == "kantine" else "kjokken/rediger_WAKEUP_meny.html"
+    return render_template(template, categories=categories, menu_name=menu_name)
+
+def _table_for(menu_name):
+    if menu_name == "kantine":
+        return "menu_kantine"
+    if menu_name == "wakeup":
+        return "menu_wakeup"
+    return None
+
+def get_menu_items(menu_name="kantine"):
+    table = _table_for(menu_name)
+    if not table:
+        return []
+    conn = get_connection_kantine()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(f"SELECT * FROM {table} WHERE active=TRUE ORDER BY position ASC, id ASC")
+    items = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return items
+
+def get_all_menu_items(menu_name="kantine"):
+    table = _table_for(menu_name)
+    if not table:
+        return []
+    conn = get_connection_kantine()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(f"SELECT * FROM {table} ORDER BY category ASC, position ASC")
+    items = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return items
+
+# @app.route("/rediger-meny/create-item", methods=["POST"])
+# def rediger_meny_create_item():
+#     if session.get("active_role") != "kjokken":
+#         return redirect(url_for("login"))
+#     menu = request.form.get("menu")
+#     table = _table_for(menu)
+#     if not table:
+#         return "Ugyldig meny", 400
+#     title = request.form.get("title", "").strip()
+#     description = request.form.get("description", "").strip()
+#     price = request.form.get("price") or 0
+#     image_url = request.form.get("image_url", "").strip()
+#     category = request.form.get("category", "Ukjent").strip()
+#     position = request.form.get("position") or 0
+#     try:
+#         conn = get_connection_kantine()
+#         cursor = conn.cursor()
+#         cursor.execute(f"""
+#             INSERT INTO {table} (category, title, description, price, image_url, position, active)
+#             VALUES (%s,%s,%s,%s,%s,%s,%s)
+#         """, (category, title, description, price, image_url, position, True))
+#         conn.commit()
+#     except Error as e:
+#         return f"Databasefeil: {e}", 500
+#     finally:
+#         cursor.close()
+#         conn.close()
+#     return redirect(url_for("rediger_meny_edit", menu_name=menu))
+
+# @app.route("/rediger-meny/delete-item", methods=["POST"])
+# def rediger_meny_delete_item():
+#     if session.get("active_role") != "kjokken":
+#         return {"ok": False, "error": "unauthorized"}, 403
+#     menu = request.form.get("menu") or (request.get_json() or {}).get("menu")
+#     item_id = request.form.get("id") or (request.get_json() or {}).get("id")
+#     table = _table_for(menu)
+#     if not table or not item_id:
+#         return {"ok": False, "error": "invalid"}, 400
+#     try:
+#         conn = get_connection_kantine()
+#         cursor = conn.cursor()
+#         cursor.execute(f"DELETE FROM {table} WHERE id=%s", (item_id,))
+#         conn.commit()
+#         cursor.close()
+#         conn.close()
+#         return {"ok": True}
+#     except Error as e:
+#         return {"ok": False, "error": str(e)}, 500
+
+@app.route("/rediger-meny/bulk-save", methods=["POST"])
+def rediger_meny_bulk_save():
+    if session.get("active_role") != "kjokken":
+        return {"ok": False}, 403
+
+    data = request.get_json()
+    menu = data["menu"]
+    changes = data["changes"]
+
+    table = _table_for(menu)
+    conn = get_connection_kantine()
+    cursor = conn.cursor()
+
+    allowed_fields = {"title", "description", "price"}
+
+    for item_id, fields in changes.items():
+        for field, value in fields.items():
+            if field not in allowed_fields:
+                continue
+            cursor.execute(
+                f"UPDATE {table} SET {field}=%s WHERE id=%s",
+                (value, item_id)
+            )
+
+
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return {"ok": True}
+
+
+    if session.get("active_role") != "kjokken":
+        return {"ok": False, "error": "unauthorized"}, 403
+    data = request.get_json() or {}
+    menu = data.get("menu")
+    item_id = data.get("id")
+    field = data.get("field")
+    value = data.get("value")
+    table = _table_for(menu)
+    if not table or not item_id or not field:
+        return {"ok": False, "error": "invalid"}, 400
+    allowed = {"title","description","price","image_url","category","position","active"}
+    if field not in allowed:
+        return {"ok": False, "error": "field not allowed"}, 400
+    if field == "active":
+        val = True if str(value).lower() in ("1","true","on","yes") else False
+    elif field in ("price", "position"):
+        try:
+            val = float(value) if field == "price" else int(value)
+        except:
+            val = 0
+    else:
+        val = value
+    try:
+        conn = get_connection_kantine()
+        cursor = conn.cursor()
+        cursor.execute(f"UPDATE {table} SET {field} = %s WHERE id = %s", (val, item_id))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return {"ok": True}
+    except Error as e:
+        return {"ok": False, "error": str(e)}, 500
+
+    if session.get("active_role") != "kjokken":
+        return {"ok": False, "error": "unauthorized"}, 403
+    data = request.get_json() or request.form
+    menu = data.get("menu")
+    order = data.get("order", "")
+    table = _table_for(menu)
+    if not table:
+        return {"ok": False, "error": "invalid menu"}, 400
+    if order:
+        ids = [i for i in str(order).split(",") if i.strip().isdigit()]
+        try:
+            conn = get_connection_kantine()
+            cursor = conn.cursor()
+            for idx, id in enumerate(ids):
+                cursor.execute(f"UPDATE {table} SET position=%s WHERE id=%s", (idx, id))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            return {"ok": True}
+        except Error as e:
+            return {"ok": False, "error": str(e)}, 500
+    return {"ok": False, "error": "no order provided"}, 400
+
+@app.route("/bestille-fra-kantina")
+def bestille_fra_kantina():
+    categories = {}
+    items = get_menu_items("kantine")
+    for it in items:
+        categories.setdefault(it["category"] or "Ukjent", []).append(it)
+    return render_template("personlig/bestille_fra_kantina.html", categories=categories, menu_source="kantine")
+
+@app.route("/bestille-fra-WAKEUP")
+def bestille_fra_WAKEUP():
+    categories = {}
+    items = get_menu_items("wakeup")
+    for it in items:
+        categories.setdefault(it["category"] or "Ukjent", []).append(it)
+    return render_template("personlig/bestille_fra_WAKEUP.html", categories=categories, menu_source="wakeup")
 
 @app.route('/submit', methods=['POST'])
 def submit():
@@ -387,36 +630,25 @@ def submit():
     antall_personer = request.form.get('antall_personer', '').strip()
     spise_i_kantina = f"Ja, {antall_personer} personer" if spise_i_kantina_bool else "Nei"
 
-    meny = {
-        "antall_Kaffekanne_1l": {"navn": "Kaffekanne 1 liter", "pris": 90},
-        "antall_Kaffekontainer_5l": {"navn": "Kaffekontainer 5 liter", "pris": 250},
-        "antall_Brus": {"navn": "Brus", "pris": 35},
-        "antall_Mineralvann": {"navn": "Mineralvann m/u kullsyre", "pris": 25},
-        "antall_Juice": {"navn": "Liten juice (eple/appelsin)", "pris": 20},
-        "antall_Melk": {"navn": "Melk 1 liter", "pris": 35},
-        "antall_Oksegryte": {"navn": "Oksegryte med ris", "pris": 165},
-        "antall_ChiliSinCarne": {"navn": "Chili sin carne", "pris": 155},
-        "antall_Kyllinggryte": {"navn": "Kyllinggryte med ris/poteter", "pris": 165},
-        "antall_FruktOppskåret": {"navn": "Sesongens frukt (oppskåret)", "pris": 40},
-        "antall_FruktTwist": {"navn": "Sesongens frukt med Twist", "pris": 50},
-        "antall_Nøttemiks": {"navn": "Nøttemiks", "pris": 29},
-        "antall_Kjeks": {"navn": "Kjeks (pris pr person)", "pris": 19},
-        "antall_Muffins": {"navn": "Muffins", "pris": 25},
-        "antall_Kake": {"navn": "Dagens kake", "pris": 30},
-        "antall_Cæsarsalat": {"navn": "Cæsarsalat med kylling", "pris": 79},
-        "antall_Tunfisksalat": {"navn": "Salat med tunfisk og egg", "pris": 79},
-        "antall_KyllingPesto": {"navn": "Salat med kylling og pesto", "pris": 79}
-    }
+    menu_source = request.form.get("menu_source") or "kantine"
+    menu_items = get_menu_items(menu_source)
+    menu_map = {str(it["id"]): it for it in menu_items}
 
     ordre = {}
     total = 0
     for key, val in request.form.items():
-        if key in meny and val and int(val) > 0:
-            antall = int(val)
-            pris = meny[key]["pris"]
-            sum_vare = antall * pris
-            ordre[meny[key]["navn"]] = {"antall": antall, "pris": pris, "sum": sum_vare}
-            total += sum_vare
+        if key.startswith("item_"):
+            item_id = key.split("_", 1)[1]
+            qty = val.strip()
+            if qty and qty.isdigit() and int(qty) > 0:
+                item = menu_map.get(item_id)
+                if not item:
+                    continue
+                antall = int(qty)
+                pris = float(item["price"])
+                sum_vare = antall * pris
+                ordre[item["title"]] = {"antall": antall, "pris": pris, "sum": sum_vare}
+                total += sum_vare
 
     try:
         conn = get_connection_kantine()

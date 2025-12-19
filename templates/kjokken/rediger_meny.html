@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Rediger meny</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <h1>Rediger meny</h1>
+
+    {% for category, items in categories.items() %}
+    <h2>{{ category }}</h2>
+
+    <table border="1" cellpadding="8">
+        <tr>
+            <th>Produkt</th>
+            <th>Beskrivelse</th>
+            <th>Pris</th>
+        </tr>
+
+        {% for item in items %}
+        <tr data-id="{{ item.id }}">
+            <td class="editable" data-field="title">{{ item.title }}</td>
+            <td class="editable" data-field="description">{{ item.description }}</td>
+            <td class="editable" data-field="price">{{ item.price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endfor %}
+
+    <button onclick="saveMenu()">💾 Lagre meny</button>
+
+    <script>
+        let changes = {};
+
+        document.querySelectorAll('.editable').forEach(cell => {
+            cell.addEventListener('click', () => {
+                if (cell.querySelector('input')) return;
+
+                const oldValue = cell.innerText;
+                const input = document.createElement('input');
+                input.value = oldValue;
+                cell.innerHTML = '';
+                cell.appendChild(input);
+                input.focus();
+
+                input.addEventListener('blur', () => {
+                    const newValue = input.value;
+                    cell.innerText = newValue;
+
+                    const row = cell.closest('tr');
+                    const id = row.dataset.id;
+                    const field = cell.dataset.field;
+
+                    if (!changes[id]) changes[id] = {};
+                    changes[id][field] = field === "price" ? parseFloat(newValue) || 0 : newValue;
+                });
+            });
+        });
+
+        function saveMenu() {
+            fetch('/rediger-meny/bulk-save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    menu: "{{ menu_name }}",
+                    changes: changes
+                })
+            }).then(r => r.json())
+                .then(data => {
+                    alert('Meny lagret');
+                    changes = {};
+                });
+        }
+    </script>
+
+
+</body>
+
+</html>

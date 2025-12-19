@@ -16,13 +16,34 @@
 
         {% if role == 'personlig' %}
         <ul>
-            <li><a href="/velg-stedet"><button>🍽️ Lag ny bestilling</button></a></li>
+            <li><button>🍽️ Lag ny bestilling</button></li>
+            <li><a href="/bestille-fra-kantina"><button>🍽️ Bestill fra kantina</button></a></li>
+            <li><a href="/bestille-fra-WAKEUP"><button>☕ Bestill fra WAKEUP</button></a></li>
             <li><a href="/mine-bestillinger"><button>📋 Se status</button></a></li>
         </ul>
         {% elif role == 'kjokken' %}
-        <ul>
-            <li><a href="/aktive-bestillinger-i-kantinen"><button>👨‍🍳 Levere bestillinger</button></a></li>
+        <ul id="kjokken-menu">
+            <li>
+                <button onclick="toggleSubMenu()">🍽️ Rediger menyer</button>
+            </li>
+
+            <ul id="submenu" style="display:none; margin-left:20px;">
+                <li><a href="/rediger-meny/kantine"><button>🍽️ Kantina</button></a></li>
+                <li><a href="/rediger-meny/wakeup"><button>☕ WAKEUP</button></a></li>
+            </ul>
+
+            <li><a href="/aktive-bestillinger-i-kantinen"><button>👨‍🍳 Aktive bestillinger</button></a></li>
         </ul>
+
+        <script>
+            function toggleSubMenu() {
+                document.getElementById('submenu').style.display = 'block';
+                document.querySelectorAll('#kjokken-menu > li').forEach(li => {
+                    if (!li.querySelector('#submenu')) li.style.display = 'none';
+                });
+            }
+        </script>
+
         {% elif role == 'okonomi' %}
         <ul>
             <li><a href="/ferdige-bestillinger"><button>💼 Fakturere bestillinger</button></a></li>

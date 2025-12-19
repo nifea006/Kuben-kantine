@@ -11,7 +11,25 @@
     {% include "_navbar.html" %}
 
     <div class="centered-page">
-        <h1>Her vil brukeren kunne legge inn bestillinger fra WAKEUP</h1>
+        <h1>Bestilling WAKEUP</h1>
+        <form action="/submit" method="post">
+            {% for category, items in categories.items() %}
+            <h3>{{ category }}</h3>
+            <ul>
+                {% for item in items %}
+                <li>
+                    <strong>{{ item.title }}</strong> - {{ item.description or "" }} - {{ "%.2f"|format(item.price) }}
+                    <input type="number" name="item_{{ item.id }}" min="0" style="width:60px;">
+                </li>
+                {% endfor %}
+            </ul>
+            {% endfor %}
+            <div>
+                <label>Navn:</label><input name="navn" required>
+                <label>E-post:</label><input type="email" name="epost" required>
+            </div>
+            <button type="submit">Send bestilling</button>
+        </form>
     </div>
 </body>
 
