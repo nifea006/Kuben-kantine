@@ -1,46 +1,56 @@
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
 <nav class="navbar">
     <ul>
-        {% if g.current_endpoint != 'main_menu' %}
-        <li><a href="{{ url_for('main_menu') }}">🏠 Hovedmeny</a></li>
-        {% endif %}
+        <li><a class="{{ 'active' if request.endpoint == 'main_menu' else '' }}" href="{{ url_for('main_menu') }}">
+                🏠 Hovedmeny
+            </a></li>
 
         <!-- Personlig navbar -->
         {% if session.get('active_role') == 'personlig' %}
-        <!-- {% if g.current_endpoint != 'velg_stedet' %}
-        <li><a href="{{ url_for('velg_stedet') }}">🍽️ Ny bestilling</a></li>
-        {% endif %} -->
-        {% if g.current_endpoint != 'bestille_fra_kantina' %}
-        <li><a href="{{ url_for('bestille_fra_kantina') }}">🪑 Bestille fra kantina</a></li>
-        {% endif %}
-        {% if g.current_endpoint != 'bestille_fra_WAKEUP' %}
-        <li><a href="{{ url_for('bestille_fra_WAKEUP') }}">🏪 Bestille fra WAKEUP</a></li>
-        {% endif %}
-        {% if g.current_endpoint != 'mine_bestillinger' %}
-        <li><a href="{{ url_for('mine_bestillinger') }}">📋 Mine bestillinger</a></li>
-        {% endif %}
+        <li><a class="{{ 'active' if request.endpoint == 'bestille_fra_kantina' else '' }}"
+                href="{{ url_for('bestille_fra_kantina') }}">
+                🪑 Bestille fra kantina
+            </a></li>
+        <li><a class="{{ 'active' if request.endpoint == 'bestille_fra_WAKEUP' else '' }}"
+                href="{{ url_for('bestille_fra_WAKEUP') }}">
+                🏪 Bestille fra WAKEUP
+            </a></li>
+        <li><a class="{{ 'active' if request.endpoint == 'mine_bestillinger' else '' }}"
+                href="{{ url_for('mine_bestillinger') }}">
+                📋 Mine bestillinger
+            </a></li>
 
         <!-- Kjøkken navbar -->
         {% elif session.get('active_role') == 'kjokken' %}
-        {% if g.current_endpoint != 'aktive_bestillinger_i_kantinen' %}
-        <li><a href="{{ url_for('aktive_bestillinger_i_kantinen') }}">👨‍🍳 Aktive bestillinger</a></li>
-        {% endif %}
+        <li><a class="{{ 'active' if request.endpoint == 'aktive_bestillinger_i_kantinen' else '' }}"
+                href="{{ url_for('aktive_bestillinger_i_kantinen') }}">
+                👨‍🍳 Aktive bestillinger
+            </a></li>
+        <!-- <li><a class="'((' 'active' if request.endpoint == 'rediger_meny' and menu_name == 'kantine' else '' '))'"
+                href="'((' url_for('rediger_meny', menu_name='kantine') '))'">
+                🍽️ Rediger meny kantine
+            </a></li>
+        <li><a class="'((' 'active' if request.endpoint == 'rediger_meny' and menu_name == 'wakeup' else '' '))'"
+                href="'((' url_for('rediger_meny', menu_name='wakeup') '))'">
+                🏪 Rediger meny WAKEUP
+            </a></li> -->
 
         <!-- Økonomi navbar -->
         {% elif session.get('active_role') == 'okonomi' %}
-        {% if g.current_endpoint != 'ferdige_bestillinger' %}
-        <li><a href="{{ url_for('ferdige_bestillinger') }}">💼 Ferdige bestillinger</a></li>
-        {% endif %}
+        <li><a class="{{ 'active' if request.endpoint == 'ferdige_bestillinger' else '' }}"
+                href="{{ url_for('ferdige_bestillinger') }}">
+                💼 Ferdige bestillinger
+            </a></li>
 
         <!-- Admin navbar -->
         {% elif session.get('active_role') == 'admin' %}
-        {% if g.current_endpoint != 'admin_brukere' %}
-        <li><a href="{{ url_for('admin_brukere') }}">🛠️ Brukere</a></li>
-        {% endif %}
-        {% if g.current_endpoint != 'admin_bestillinger' %}
-        <li><a href="{{ url_for('admin_bestillinger') }}">📦 Alle bestillinger</a></li>
-        {% endif %}
+        <li><a class="{{ 'active' if request.endpoint == 'admin_brukere' else '' }}"
+                href="{{ url_for('admin_brukere') }}">
+                🛠️ Brukere
+            </a></li>
+        <li><a class="{{ 'active' if request.endpoint == 'admin_bestillinger' else '' }}"
+                href="{{ url_for('admin_bestillinger') }}">
+                📦 Alle bestillinger
+            </a></li>
 
         {% endif %}
 

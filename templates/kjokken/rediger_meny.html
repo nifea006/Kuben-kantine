@@ -1,83 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
+<!-- <!DOCTYPE html>
+<html lang="no">
 
 <head>
     <meta charset="UTF-8">
     <title>Rediger meny</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 
 <body>
+    {% include "_navbar.html" %}
 
     <h1>Rediger meny</h1>
 
-    {% for category, items in categories.items() %}
-    <h2>{{ category }}</h2>
+    <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+        <button onclick="saveMenu()">💾 Lagre meny</button>
+    </div>
 
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>Produkt</th>
-            <th>Beskrivelse</th>
-            <th>Pris</th>
-        </tr>
+    <section id="Meny" data-menu-name="{{ menu_name }}">
+        <h2>Meny</h2>
 
-        {% for item in items %}
-        <tr data-id="{{ item.id }}">
-            <td class="editable" data-field="title">{{ item.title }}</td>
-            <td class="editable" data-field="description">{{ item.description }}</td>
-            <td class="editable" data-field="price">{{ item.price }}</td>
-        </tr>
+        {% for category, items in categories.items() %}
+        <h3 style="cursor: pointer; margin: 0;" onclick="makeTextEditable(this, null, 'category')">{{ category }}
+        </h3>
+
+        <div class="manage-div" style="justify-content: flex-start;">
+            <button onclick="addMenuItemToCategory('{{ category }}')"
+                style="background-color: #28a745; padding: 5px 10px;">
+                + Legg til vare</button>
+        </div>
+
+        <br>
+
+        <div class="menu-category">
+            {% for item in items %}
+            <div class="menu-item" data-id="{{ item.id }}">
+
+                <img src="{{ item.image_url or '#' }}" alt="Bilde av {{ item.title }}" width="150" height="200"
+                    style="cursor: pointer;" onclick="editItemImage('{{ item.id }}')">
+
+                <div class="information">
+                    <p style="text-align: center; cursor: pointer;">{{ item.title }}</p>
+
+                    <p class="les-mer" onclick="toggleReadMore(event)">Les mer ▼</p>
+
+                    <p class="description" style="display: none; cursor: pointer;">{{ item.description or "" }}</p>
+
+                    <p style="cursor: pointer;">{{ "%.0f"|format(item.price) }} kr</p>
+
+                    <div class="manage-div">
+                        <button class="delete-btn" type="button" onclick="deleteMenuItem('{{ item.id }}')">🗑️</button>
+                        <button type="button" onclick="updateItemPosition('{{ item.id }}', 'left')">←</button>
+                        <button type="button" onclick="updateItemPosition('{{ item.id }}', 'right')">→</button>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
         {% endfor %}
-    </table>
-    {% endfor %}
-
-    <button onclick="saveMenu()">💾 Lagre meny</button>
-
-    <script>
-        let changes = {};
-
-        document.querySelectorAll('.editable').forEach(cell => {
-            cell.addEventListener('click', () => {
-                if (cell.querySelector('input')) return;
-
-                const oldValue = cell.innerText;
-                const input = document.createElement('input');
-                input.value = oldValue;
-                cell.innerHTML = '';
-                cell.appendChild(input);
-                input.focus();
-
-                input.addEventListener('blur', () => {
-                    const newValue = input.value;
-                    cell.innerText = newValue;
-
-                    const row = cell.closest('tr');
-                    const id = row.dataset.id;
-                    const field = cell.dataset.field;
-
-                    if (!changes[id]) changes[id] = {};
-                    changes[id][field] = field === "price" ? parseFloat(newValue) || 0 : newValue;
-                });
-            });
-        });
-
-        function saveMenu() {
-            fetch('/rediger-meny/bulk-save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    menu: "{{ menu_name }}",
-                    changes: changes
-                })
-            }).then(r => r.json())
-                .then(data => {
-                    alert('Meny lagret');
-                    changes = {};
-                });
-        }
-    </script>
-
+    </section>
 
 </body>
 
-</html>
+</html> -->

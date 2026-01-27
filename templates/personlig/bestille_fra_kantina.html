@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Kuben Kantine Bestilling</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 
 <body>
@@ -12,7 +13,7 @@
 
     <h1>Bestillingsskjema for Kuben Kantine</h1>
 
-    <form id="bestilling-form" action="/submit" method="post">
+    <form id="bestilling-form" action="/submit" method="POST">
         <div class="bruker-info">
             <div class="Kundeinformasjon">
                 <h2>Kundeinformasjon</h2>
@@ -85,49 +86,35 @@
             </div>
         </div>
 
-        <script>
-            function toggleKoststedInput() {
-                const select = document.getElementById('koststedSelect');
-                const input = document.getElementById('koststedInput');
-                input.style.display = select.value === 'other' ? 'inline-block' : 'none';
-                input.required = select.value === 'other';
-            }
-            function toggleSpiseIKantina() {
-                const checkbox = document.getElementById('spise_i_kantina');
-                const antallContainer = document.getElementById('antallContainer');
-                const Meny = document.getElementById('Meny');
-                antallContainer.style.display = checkbox.checked ? 'flex' : 'none';
-                antallContainer.required = checkbox.checked;
-                Meny.style.display = checkbox.checked ? 'none' : 'block';
-            }
-            let antall_personer = parseInt(document.getElementById('antallContainer').value, 10);
-            if (antall_personer === '' || isNaN(antall_personer)) {
-                antall_personer = 1
-            }
-        </script>
         <section id="Meny">
             <h2>Meny</h2>
             {% for category, items in categories.items() %}
             <h3>{{ category }}</h3>
-            <table class="menu-table" border="1" cellpadding="8">
-                <tr>
-                    <th>Produkt</th>
-                    <th>Beskrivelse</th>
-                    <th>Pris</th>
-                    <th>Antall</th>
-                </tr>
+            <div class="menu-category">
                 {% for item in items %}
-                <tr>
-                    <td>{{ item.title }}</td>
-                    <td>{{ item.description or "" }}</td>
-                    <td>{{ "%.2f"|format(item.price) }}</td>
-                    <td><input type="number" name="item_{{ item.id }}" min="0"></td>
-                </tr>
+                <div class="menu-item">
+                    <img src="#" alt="Bilde av {{ item.title }}" width="150" height="200">
+                    <div class="information">
+                        <p style="text-align: center;">{{ item.title }}</p>
+                        <p class="les-mer" onclick="toggleReadMore(event)">Les mer ▼</p>
+                        <p class="description" style="display: none;">{{ item.description or "" }}</p>
+                        <p>{{ "%.0f"|format(item.price) }} kr</p>
+                        <div class="antall-div">
+                            <button class="plus" type="button" onclick="changeQuantity('{{ item.id }}', +1)">+</button>
+                            <p class="antall-p" name="{{ item.id }}" onclick="editQuantity('{{ item.id }}')"
+                                tabindex="0">0
+                            </p>
+                            <input class="antall-input" type="number" name="item_{{ item.id }}" min="0"
+                                style="width: 70px; text-align: center; display: none;">
+                            <button class="minus" type="button" onclick="changeQuantity('{{ item.id }}', -1)">-</button>
+                        </div>
+                    </div>
+                </div>
                 {% endfor %}
-            </table>
+            </div>
             {% endfor %}
             <h2>Melding til kantina</h2>
-            <textarea name="melding" rows="4" cols="40" placeholder="f.eks. allergier"></textarea><br>
+            <textarea name="melding" rows="4" cols="40" placeholder="f.eks. allergier"></textarea>
         </section>
         <button id="submitButton" type="submit">Send bestilling</button>
     </form>
