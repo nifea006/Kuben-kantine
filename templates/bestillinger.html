@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Bestillinger</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 
 <body>
@@ -21,50 +21,52 @@
             <th>Sum</th>
             <th>Detaljer</th>
 
-            {% elif role == 'kjokken' %}
+            {% elif role == 'kjokken' or role == 'okonomi' or role == 'admin' %}
             <th>Ordre-ID</th>
-            <th>Kundens navn</th>
-            <th>Hentetid</th>
-            <th>Koststed</th>
-            <th>Handling</th>
-
-            {% elif role == 'okonomi' %}
-            <th>ID</th>
-            <th>Kundens navn</th>
-            <th>Koststed</th>
-            <th>Hentedato</th>
+            <th>Kunder</th>
+            <th>Ordredato og -tid</th>
+            <th>Hentedato og -tid</th>
             <th>Sum</th>
-            <th>Handling</th>
-
-            {% elif role == 'admin' %}
-            <th>Ordre-ID</th>
-            <th>Kundens-ID</th>
-            <th>Kundens navn</th>
-            <th>E-post</th>
-            <th>Koststed</th>
-            <th>Dato</th>
-            <th>Total (kr)</th>
+            {% if role == 'admin' %}
             <th>Levert</th>
             <th>Fakturert</th>
+            {% endif %}
             <th>Handling</th>
+
             {% endif %}
         </tr>
 
-        {% for o in orders %}
+        {% for o in order_info %}
         <tr>
             {% if role == 'personlig' %}
             <td>{{ o.id }}</td>
             <td>{{ o.ordre_dato | format_date }} | {{ o.ordre_tid | format_time }}</td>
             <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid | format_time }}</td>
             <td>{{ 'Levert' if o.status_levert else 'Behandling' }}</td>
-            <td>{{ o.sum }} kr</td>
+            <td>{{ o.sum | int }} kr</td>
             <td><a href="/vis-bestilling/{{ o.id }}">Se kvittering</a></td>
 
-            {% elif role == 'kjokken' %}
+            {% elif role == 'kjokken' or role == 'okonomi' or role == 'admin' %}
             <td>{{ o.id }}</td>
-            <td>{{ o.navn }}</td>
-            <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid }}</td>
-            <td>{{ o.koststed }}</td>
+            <td>
+                {{ o.navn }}
+                <p class="les-mer" onclick="toggleReadMore(event)"> Les mer ▼</p>
+                <div class="description" style="display: none;">
+                    <p><strong>Kundens-ID:</strong> {{ o.kunde_id }}</p>
+                    <p><strong>E-post:</strong> {{ o.epost }}</p>
+                    <p><strong>Mobil:</strong> {{ o.mobil }}</p>
+                    <p><strong>Organisasjonsnummer:</strong> {{ o.organisasjonsnummer }}</p>
+                    <p><strong>Fakturaadresse:</strong> {{ o.fakturaadresse }}</p>
+                    <p><strong>Ressursnummer:</strong> {{ o.ressursnummer }}</p>
+                    <p><strong>Koststed:</strong> {{ o.koststed }}</p>
+                </div>
+            </td>
+            <td>{{ o.ordre_dato | format_date }} | {{ o.ordre_tid | format_time }}</td>
+            <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid | format_time }}</td>
+            <td>{{ o.sum | int }} kr</td>
+            {% endif %}
+
+            {% if role == 'kjokken' %}
             <td>
                 <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
                 <form method="POST" action="/sett-levert/{{ o.id }}" class="inline-form">
@@ -73,29 +75,24 @@
             </td>
 
             {% elif role == 'okonomi' %}
-            <td>{{ o.id }}</td>
-            <td>{{ o.navn }}</td>
-            <td>{{ o.koststed }}</td>
-            <td>{{ o.hent_dato }}</td>
-            <td>{{ o.sum }} kr</td>
             <td>
                 <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
-                <form method="POST" action="/sett-fakturert/{{ o.id }}" style="display:inline;">
+                <form method="POST" action="/sett-fakturert/{{ o.id }}" class="inline-form">
                     <button type="submit">📦 Merk som fakturert</button>
                 </form>
             </td>
 
             {% elif role == 'admin' %}
-            <td>{{ o.id }}</td>
-            <td>{{ o.user_id }}</td>
-            <td>{{ o.navn }}</td>
-            <td>{{ o.epost }}</td>
-            <td>{{ o.koststed }}</td>
-            <td>{{ o.hent_dato }}</td>
-            <td>{{ o.total }}</td>
             <td>{{ '✔️' if o.status_levert else '❌' }}</td>
             <td>{{ '✔️' if o.status_fakturert else '❌' }}</td>
-            <td><a href="/vis-bestilling/{{ o.id }}">Vis</a></td>
+            <td>
+                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
+                <form method="POST" action="/slett-bestilling/{{ o.id }}" class="inline-form">
+                    <button type="submit" onclick="return confirm('Er du sikker på at du vil slette bestillingen?');">
+                        🗑️ Slett
+                    </button>
+                </form>
+            </td>
             {% endif %}
         </tr>
         {% endfor %}

@@ -26,29 +26,20 @@
                 <li><a href="/bestille-fra-WAKEUP"><button>☕ Bestill fra WAKEUP</button></a></li>
             </ul>
 
-            <li class="main-menu-li"><a href="/mine-bestillinger"><button>📋 Se status</button></a></li>
+            <li class="main-menu-li"><a href="/mine-bestillinger"><button>📋 Mine bestillinger</button></a></li>
         </ul>
+
         {% elif role == 'kjokken' %}
         <ul class="main-menu-ul">
-            <!-- <li class="main-menu-li">
-                <button onclick="toggleSubMenu()">🍽️ Rediger menyer</button>
-            </li>
-
-            <ul class="submenu" style="display: none; margin-left: 20px;">
-                <li><a href="/rediger-meny/kantine"><button>🍽️ Kantina</button></a></li>
-                <li><a href="/rediger-meny/wakeup"><button>☕ WAKEUP</button></a></li>
-            </ul> -->
-
             <li class="main-menu-li"><a href="/aktive-bestillinger-i-kantinen"><button>👨‍🍳 Aktive
                         bestillinger</button></a></li>
         </ul>
-
-
 
         {% elif role == 'okonomi' %}
         <ul>
             <li><a href="/ferdige-bestillinger"><button>💼 Fakturere bestillinger</button></a></li>
         </ul>
+
         {% elif role == 'admin' %}
         <ul>
             <li><a href="/admin-brukere"><button>🛠️ Administrer brukere</button></a></li>

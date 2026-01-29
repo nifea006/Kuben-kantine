@@ -112,6 +112,10 @@ label {
     margin-bottom: 6px;
 }
 
+div label {
+    display: block;
+}
+
 input,
 select,
 textarea {
@@ -143,10 +147,6 @@ button:hover {
 }
 
 /* ====== Menu Items ====== */
-#Meny {
-    margin-bottom: 30px;
-}
-
 .menu-category {
     display: flex;
     flex-wrap: wrap;
@@ -191,6 +191,12 @@ button:hover {
     border-radius: 15px;
 }
 
+td .description {
+    text-align: left;
+    width: 250px;
+    padding: 10px;
+}
+
 .antall-div {
     display: flex;
     flex-direction: row;
@@ -203,6 +209,12 @@ button:hover {
     margin: 0 10px;
     font-size: large;
     cursor: pointer;
+}
+
+.antall-input-edit {
+    padding: 2px;
+    font-size: 1rem;
+    border-radius: 4px;
 }
 
 .plus,

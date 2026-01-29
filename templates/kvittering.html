@@ -11,18 +11,21 @@
     {% include "_navbar.html" %}
 
     <div class="receipt">
-        <h1>Kvittering for bestilling</h1>
-        <p><strong>Navn:</strong> {{ order.navn }}</p>
-        <p><strong>Mobil:</strong> {{ order.mobil }}</p>
-        <p><strong>Organisasjonsnummer:</strong> {{ order.organisasjonsnummer }}</p>
-        <p><strong>Fakturaadresse:</strong> {{ order.fakturaadresse }}</p>
-        <p><strong>E-post:</strong> {{ order.epost }}</p>
-        <p><strong>Ressursnummer:</strong> {{ order.ressursnummer }}</p>
-        <p><strong>Koststed:</strong> {{ order.koststed }}</p>
-        <p><strong>Dato for henting:</strong> {{ order.hent_dato | format_date }}</p>
-        <p><strong>Tidspunkt:</strong> {{ order.hent_tid }}</p>
-        <p><strong>Spise i kantina:</strong> {{ order.spise_i_kantina }}</p>
-        <p><strong>Melding:</strong> {{ order.melding }}</p>
+        <h1>Kvittering</h1>
+        <p><strong>Navn:</strong> {{ order_info.navn }}</p>
+        <p><strong>E-post:</strong> {{ order_info.epost }}</p>
+        <p><strong>Mobil:</strong> {{ order_info.mobil }}</p>
+        <p><strong>Bestilt:</strong> {{ order_info.ordre_dato | format_date }} | {{ order_info.ordre_tid | format_time }}</p>
+        <p><strong>Hentes:</strong> {{ order_info.hent_dato | format_date }} | {{ order_info.hent_tid | format_time }}</p>
+
+        {% if order_info.koststed %}
+        <p><strong>Organisasjonsnummer:</strong> {{ order_info.organisasjonsnummer }}</p>
+        <p><strong>Fakturaadresse:</strong> {{ order_info.fakturaadresse }}</p>
+        <p><strong>Ressursnummer:</strong> {{ order_info.ressursnummer }}</p>
+        <p><strong>Koststed:</strong> {{ order_info.koststed }}</p>
+        <p><strong>Spise i kantina:</strong> {{ order_info.spise_i_kantina }}</p>
+        <p><strong>Melding:</strong> {{ order_info.melding }}</p>
+        {% endif %}
 
         <h3>Bestilte varer</h3>
         <table border="1" cellpadding="8">
@@ -32,17 +35,17 @@
                 <th>Pris pr stk</th>
                 <th>Sum</th>
             </tr>
-            {% for item, data in order.ordre.items() %}
+            {% for item, data in order_array.items() %}
             <tr>
                 <td>{{ item }}</td>
-                <td>{{ data['antall'] }}</td>
-                <td>{{ data['pris'] }} kr</td>
-                <td>{{ data['sum'] }} kr</td>
+                <td>{{ data['antall'] | int }}</td>
+                <td>{{ data['pris'] | int }} kr</td>
+                <td>{{ data['sum'] | int }} kr</td>
             </tr>
             {% endfor %}
         </table>
 
-        <p class="total">Totalt: {{ order.total }} kr</p>
+        <p class="total">Totalt: {{ order_info.sum | int }} kr</p>
 
 </body>
 

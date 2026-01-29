@@ -1,9 +1,5 @@
 <nav class="navbar">
     <ul>
-        <li><a class="{{ 'active' if request.endpoint == 'main_menu' else '' }}" href="{{ url_for('main_menu') }}">
-                🏠 Hovedmeny
-            </a></li>
-
         <!-- Personlig navbar -->
         {% if session.get('active_role') == 'personlig' %}
         <li><a class="{{ 'active' if request.endpoint == 'bestille_fra_kantina' else '' }}"
@@ -25,14 +21,6 @@
                 href="{{ url_for('aktive_bestillinger_i_kantinen') }}">
                 👨‍🍳 Aktive bestillinger
             </a></li>
-        <!-- <li><a class="'((' 'active' if request.endpoint == 'rediger_meny' and menu_name == 'kantine' else '' '))'"
-                href="'((' url_for('rediger_meny', menu_name='kantine') '))'">
-                🍽️ Rediger meny kantine
-            </a></li>
-        <li><a class="'((' 'active' if request.endpoint == 'rediger_meny' and menu_name == 'wakeup' else '' '))'"
-                href="'((' url_for('rediger_meny', menu_name='wakeup') '))'">
-                🏪 Rediger meny WAKEUP
-            </a></li> -->
 
         <!-- Økonomi navbar -->
         {% elif session.get('active_role') == 'okonomi' %}
@@ -53,6 +41,12 @@
             </a></li>
 
         {% endif %}
+
+        <br>
+        <li style="margin-left:auto;"><a class="{{ 'active' if request.endpoint == 'main_menu' else '' }}" href="{{ url_for('main_menu') }}">
+                🏠 Hovedmeny
+            </a></li>
+        <li style="margin-right:auto;"><a href="javascript:history.back()">← Til forige side</a></li>
 
         <li style="margin-left:auto;"><a href="{{ url_for('velg_rolle') }}">⇄ Bytt rolle</a></li>
         <li><a href="{{ url_for('login') }}">🚪 Logg ut</a></li>
