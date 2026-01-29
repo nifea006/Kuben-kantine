@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Kuben Kantine - Hovedmeny</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 
 <body>
@@ -15,18 +16,30 @@
         <h2>Velg hva du vil gjøre</h2>
 
         {% if role == 'personlig' %}
-        <ul>
-            <li><a href="/velg-stedet"><button>🍽️ Lag ny bestilling</button></a></li>
-            <li><a href="/mine-bestillinger"><button>📋 Se status</button></a></li>
+        <ul class="main-menu-ul">
+            <li class="main-menu-li">
+                <button onclick="toggleSubMenu()">🍽️ Lag ny bestilling</button>
+            </li>
+
+            <ul class="submenu" style="display: none; margin-left: 20px;">
+                <li><a href="/bestille-fra-kantina"><button>🍽️ Bestill fra kantina</button></a></li>
+                <li><a href="/bestille-fra-WAKEUP"><button>☕ Bestill fra WAKEUP</button></a></li>
+            </ul>
+
+            <li class="main-menu-li"><a href="/mine-bestillinger"><button>📋 Mine bestillinger</button></a></li>
         </ul>
+
         {% elif role == 'kjokken' %}
-        <ul>
-            <li><a href="/aktive-bestillinger-i-kantinen"><button>👨‍🍳 Levere bestillinger</button></a></li>
+        <ul class="main-menu-ul">
+            <li class="main-menu-li"><a href="/aktive-bestillinger-i-kantinen"><button>👨‍🍳 Aktive
+                        bestillinger</button></a></li>
         </ul>
+
         {% elif role == 'okonomi' %}
         <ul>
             <li><a href="/ferdige-bestillinger"><button>💼 Fakturere bestillinger</button></a></li>
         </ul>
+
         {% elif role == 'admin' %}
         <ul>
             <li><a href="/admin-brukere"><button>🛠️ Administrer brukere</button></a></li>

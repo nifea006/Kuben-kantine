@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Bestillinger</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+
+<body>
+    {% include "_navbar.html" %}
+
+    <table border="1" cellpadding="8">
+        <tr>
+            {% if role == 'personlig' %}
+            <th>Ordre-ID</th>
+            <th>Ordredato og -tid</th>
+            <th>Hentedato og -tid</th>
+            <th>Status</th>
+            <th>Sum</th>
+            <th>Detaljer</th>
+
+            {% elif role == 'kjokken' or role == 'okonomi' or role == 'admin' %}
+            <th>Ordre-ID</th>
+            <th>Kunder</th>
+            <th>Ordredato og -tid</th>
+            <th>Hentedato og -tid</th>
+            <th>Sum</th>
+            {% if role == 'admin' %}
+            <th>Levert</th>
+            <th>Fakturert</th>
+            {% endif %}
+            <th>Handling</th>
+
+            {% endif %}
+        </tr>
+
+        {% for o in order_info %}
+        <tr>
+            {% if role == 'personlig' %}
+            <td>{{ o.id }}</td>
+            <td>{{ o.ordre_dato | format_date }} | {{ o.ordre_tid | format_time }}</td>
+            <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid | format_time }}</td>
+            <td>{{ 'Levert' if o.status_levert else 'Behandling' }}</td>
+            <td>{{ o.sum | int }} kr</td>
+            <td><a href="/vis-bestilling/{{ o.id }}">Se kvittering</a></td>
+
+            {% elif role == 'kjokken' or role == 'okonomi' or role == 'admin' %}
+            <td>{{ o.id }}</td>
+            <td>
+                {{ o.navn }}
+                <p class="les-mer" onclick="toggleReadMore(event)"> Les mer ▼</p>
+                <div class="description" style="display: none;">
+                    <p><strong>Kundens-ID:</strong> {{ o.kunde_id }}</p>
+                    <p><strong>E-post:</strong> {{ o.epost }}</p>
+                    <p><strong>Mobil:</strong> {{ o.mobil }}</p>
+                    <p><strong>Organisasjonsnummer:</strong> {{ o.organisasjonsnummer }}</p>
+                    <p><strong>Fakturaadresse:</strong> {{ o.fakturaadresse }}</p>
+                    <p><strong>Ressursnummer:</strong> {{ o.ressursnummer }}</p>
+                    <p><strong>Koststed:</strong> {{ o.koststed }}</p>
+                </div>
+            </td>
+            <td>{{ o.ordre_dato | format_date }} | {{ o.ordre_tid | format_time }}</td>
+            <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid | format_time }}</td>
+            <td>{{ o.sum | int }} kr</td>
+            {% endif %}
+
+            {% if role == 'kjokken' %}
+            <td>
+                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
+                <form method="POST" action="/sett-levert/{{ o.id }}" class="inline-form">
+                    <button type="submit">✔️ Sett som levert</button>
+                </form>
+            </td>
+
+            {% elif role == 'okonomi' %}
+            <td>
+                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
+                <form method="POST" action="/sett-fakturert/{{ o.id }}" class="inline-form">
+                    <button type="submit">📦 Merk som fakturert</button>
+                </form>
+            </td>
+
+            {% elif role == 'admin' %}
+            <td>{{ '✔️' if o.status_levert else '❌' }}</td>
+            <td>{{ '✔️' if o.status_fakturert else '❌' }}</td>
+            <td>
+                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
+                <form method="POST" action="/slett-bestilling/{{ o.id }}" class="inline-form">
+                    <button type="submit" onclick="return confirm('Er du sikker på at du vil slette bestillingen?');">
+                        🗑️ Slett
+                    </button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+
+</body>
+
+</html>

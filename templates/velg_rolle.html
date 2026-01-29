@@ -13,16 +13,19 @@
         <p>Du har flere roller. Hva vil du gjøre i dag?</p>
 
         <form method="POST" action="/sett_rolle">
-            {% for r in roles %}
             <ul>
-                <button type="submit" name="rolle" value="{{ r }}">
-                    {% if r == 'personlig' %}🍽️ Bestille mat{% endif %}
-                    {% if r == 'kjokken' %}👨‍🍳 Levere bestillinger{% endif %}
-                    {% if r == 'okonomi' %}💼 Fakturere bestillinger{% endif %}
-                    {% if r == 'admin' %}🛠️ Administrere nettstedet{% endif %}
-                </button>
+                {% for r in roles %}
+                <li>
+                    <button type="submit" name="rolle" value="{{ r }}">
+                        {% if r == 'personlig' %}🍽️ Bestille mat{% endif %}
+                        {% if r == 'kjokken' %}👨‍🍳 Levere bestillinger{% endif %}
+                        {% if r == 'okonomi' %}💼 Fakturere bestillinger{% endif %}
+                        {% if r == 'admin' %}🛠️ Administrere nettstedet{% endif %}
+                    </button>
+                </li>
+                {% endfor %}
+                <li><a href="{{ url_for('login') }}">Logg ut</a></li>
             </ul>
-            {% endfor %}
         </form>
     </div>
 </body>

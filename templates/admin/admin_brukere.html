@@ -9,6 +9,7 @@
 
 <body>
     {% include "_navbar.html" %}
+
     <h2>Brukeradministrasjon</h2>
     <table border="1" cellpadding="8">
         <tr>
@@ -22,8 +23,7 @@
         <tr>
             <form method="POST">
                 <td>
-                    <input size="1" name="new_id" value="{{ u.id }}" style="text-align: center;">
-                    <input type="hidden" name="id" value="{{ u.id }}">
+                    {{ u.id }}
                 </td>
                 <td>{{ u.navn }}</td>
                 <td>{{ u.epost }}</td>

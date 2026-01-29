@@ -6,33 +6,49 @@ from mysql.connector import Error
 import requests
 import os
 from dotenv import load_dotenv
-from datetime import datetime
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 
-@app.template_filter('fromjson')
-def fromjson(value):
-    import json
-    try:
-        return json.loads(value)
-    except:
-        return {}
-
+# Format date
 @app.template_filter('format_date')
 def format_date(value):
     if not value:
         return ''
     try:
         if isinstance(value, str):
-            value = datetime.strptime(value, "%Y-%m-%d").date()
-        return value.strftime("%d-%m-%y")
+            for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d", "%d.%m.%Y", "%d-%m-%Y"]:
+                try:
+                    value = datetime.strptime(value, fmt)
+                    break
+                except ValueError:
+                    continue
+            else:
+                return value
+        return value.strftime("%d.%m.%Y")
     except Exception:
         return value
 
-app.jinja_env.filters['format_date'] = format_date
+# Format time
+@app.template_filter('format_time')
+def format_time(value):
+    if not value:
+        return ''
+    try:
+        if isinstance(value, str):
+            for fmt in ["%Y-%m-%d %H:%M:%S", "%H:%M:%S", "%H:%M"]:
+                try:
+                    value = datetime.strptime(value, fmt)
+                    break
+                except ValueError:
+                    continue
+            else:
+                return value
+        return value.strftime("%H:%M")
+    except Exception:
+        return value
 
 # Read environment variables
 DB_HOST = os.getenv("DB_HOST")
@@ -62,6 +78,7 @@ def create_orders_table():
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS orders (
                 id INT AUTO_INCREMENT PRIMARY KEY,
+                kunde_id INT,
                 navn VARCHAR(100),
                 mobil VARCHAR(20),
                 organisasjonsnummer VARCHAR(50),
@@ -69,22 +86,61 @@ def create_orders_table():
                 epost VARCHAR(100),
                 ressursnummer VARCHAR(50),
                 koststed VARCHAR(50),
+                ordre_dato DATE,
+                ordre_tid TIME,
                 hent_dato DATE,
                 hent_tid TIME,
                 spise_i_kantina VARCHAR(50),
                 status_levert BOOLEAN,
                 status_fakturert BOOLEAN,
                 melding TEXT,
-                ordre TEXT
+                order_array TEXT,
+                sum INT
             )
         """)
         conn.commit()
         cursor.close()
         conn.close()
     except Error as e:
-        print("Feil ved oppretting av tabell:", e)
+        print("Feil ved oppretting av orders-tabell:", e)
 
 create_orders_table()
+
+def create_menu_tables():
+    try:
+        conn = get_connection_kantine()
+        cursor = conn.cursor()
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS menu_kantine (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                category VARCHAR(100) DEFAULT 'Ukjent',
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                price DECIMAL(8,2) DEFAULT 0,
+                image_url VARCHAR(255),
+                position INT DEFAULT 0,
+                active BOOLEAN DEFAULT TRUE
+            )
+        """)
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS menu_wakeup (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                category VARCHAR(100) DEFAULT 'Ukjent',
+                title VARCHAR(255) NOT NULL,
+                description TEXT,
+                price DECIMAL(10,2) DEFAULT 0,
+                image_url VARCHAR(255),
+                position INT DEFAULT 0,
+                active BOOLEAN DEFAULT TRUE
+            )
+        """)
+        conn.commit()
+        cursor.close()
+        conn.close()
+    except Error as e:
+        print("Feil ved oppretting av menu-tabeller:", e)
+
+create_menu_tables()
 
 # Create user table if not exists
 def create_user_table():
@@ -96,18 +152,22 @@ def create_user_table():
                 id INT AUTO_INCREMENT PRIMARY KEY,
                 navn VARCHAR(255) NOT NULL,
                 epost VARCHAR(255) UNIQUE NOT NULL,
+                mobil VARCHAR(20),
+                organisasjonsnummer VARCHAR(50),
+                fakturaadresse VARCHAR(255),
+                ressursnummer VARCHAR(50),
+                koststed VARCHAR(50),
                 rolle_personlig BOOLEAN DEFAULT TRUE,
                 rolle_okonomi BOOLEAN DEFAULT FALSE,
                 rolle_kjokken BOOLEAN DEFAULT FALSE,
                 rolle_admin BOOLEAN DEFAULT FALSE
             )
-
         """)
         conn.commit()
         cursor.close()
         conn.close()
     except Error as e:
-        print("Feil ved oppretting av tabell:", e)
+        print("Feil ved oppretting av users-tabell:", e)
 
 create_user_table()
 
@@ -119,35 +179,28 @@ def before_request():
 
 @app.route("/")
 def home():
-    return redirect(url_for("login"))
-
-
-@app.route("/main")
-def main_menu():
-    role = session.get("active_role")
-    if not role:
+    if "user" not in session:
         return redirect(url_for("login"))
-
-    return render_template("main_menu.html", role=role)
+    return redirect(url_for("main_menu"))
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        email = request.form.get("email").strip().lower()
+        epost = request.form.get("email").strip().lower()
         navn = request.form.get("navn").strip()
 
         conn = get_connection_kantine()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM users WHERE epost = %s", (email,))
+        cursor.execute("SELECT * FROM users WHERE epost = %s", (epost,))
         user = cursor.fetchone()
 
         if not user:
             cursor.execute("""
                 INSERT INTO users (navn, epost)
                 VALUES (%s, %s)
-            """, (navn, email))
+            """, (navn, epost))
             conn.commit()
-            cursor.execute("SELECT * FROM users WHERE epost = %s", (email,))
+            cursor.execute("SELECT * FROM users WHERE epost = %s", (epost,))
             user = cursor.fetchone()
 
         cursor.close()
@@ -164,6 +217,7 @@ def login():
             roles.append("admin")
 
         session["user"] = user
+        session["id"] = user["id"]
         session["roles"] = roles
 
         if len(roles) == 1:
@@ -187,21 +241,28 @@ def velg_rolle():
         if valgt_rolle in roles:
             session["active_role"] = valgt_rolle
             return redirect(url_for("main_menu"))
-        else:
-            return render_template("velg_rolle.html", roles=roles, navn=navn, error="Ugyldig rolle valgt.")
 
     return render_template("velg_rolle.html", roles=roles, navn=navn)
 
+@app.route("/main")
+def main_menu():
+    role = session.get("active_role")
+    if not role:
+        return redirect(url_for("login"))
+
+    return render_template("main_menu.html", role=role)
 
 @app.route("/admin-brukere", methods=["GET", "POST"])
 def admin_brukere():
+    role = session.get("active_role")
+    if role != "admin":
+        return redirect(url_for("login"))
+    
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
-
     if request.method == "POST":
         action = request.form.get("action")
         user_id = request.form.get("id")
-        new_id = request.form.get("new_id")
 
         if action == "save":
             rolle_personlig = 'rolle_personlig' in request.form
@@ -215,9 +276,6 @@ def admin_brukere():
                 WHERE id=%s
             """, (rolle_personlig, rolle_okonomi, rolle_kjokken, rolle_admin, user_id))
 
-            if new_id and new_id != user_id:
-                cursor.execute("UPDATE users SET id=%s WHERE id=%s", (new_id, user_id))
-
         elif action == "delete":
             cursor.execute("DELETE FROM users WHERE id=%s", (user_id,))
 
@@ -227,6 +285,7 @@ def admin_brukere():
     users = cursor.fetchall()
     cursor.close()
     conn.close()
+
     return render_template("admin/admin_brukere.html", users=users)
 
 @app.route("/sett_rolle", methods=["POST"])
@@ -236,52 +295,48 @@ def sett_rolle():
     return redirect(url_for("main_menu"))
 
 
-@app.route("/velg-stedet")
-def velg_stedet():
-    return render_template("personlig/velg_stedet.html")
-
-@app.route("/bestille-fra-kantina")
-def bestille_fra_kantina():
-    return render_template("personlig/bestille_fra_kantina.html")
-
-@app.route("/bestille-fra-WAKEUP")
-def bestille_fra_WAKEUP():
-    return render_template("personlig/bestille_fra_WAKEUP.html")
-
-
+# ↓ Bestillinger ↓
+# Personlig:
 @app.route("/mine-bestillinger")
 def mine_bestillinger():
     user = session.get("user")
     if not user:
         return redirect(url_for("login"))
+    role = session.get("active_role")
+    if not role:
+        return redirect(url_for("login"))
 
-    email = user["epost"]
+    epost = user["epost"]
 
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM orders WHERE epost = %s ORDER BY id DESC", (email,))
-    orders = cursor.fetchall()
-    
+    cursor.execute("SELECT * FROM orders WHERE epost = %s ORDER BY id DESC", (epost,))
+    order_info = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("personlig/mine_bestillinger.html", orders=orders)
+    return render_template("bestillinger.html", order_info=order_info, role=role)
 
+# Kjøkken:
 @app.route("/aktive-bestillinger-i-kantinen")
 def aktive_bestillinger_i_kantinen():
+    role = session.get("active_role")
+    if role != "kjokken":
+        return redirect(url_for("login"))
+    
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
-    cursor.execute("""
-        SELECT * FROM orders
-        WHERE status_levert = FALSE
-        ORDER BY id ASC
-    """)
-    orders = cursor.fetchall()
+    cursor.execute("SELECT * FROM orders WHERE status_levert = FALSE OR status_levert IS NULL ORDER BY id ASC")
+    order_info = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("kjokken/aktive_bestillinger_i_kantinen.html", orders=orders)
+    return render_template("bestillinger.html", order_info=order_info, role=role)
 
 @app.route("/sett-levert/<int:order_id>", methods=["POST"])
 def sett_levert(order_id):
+    role = session.get("active_role")
+    if role != "kjokken":
+        return redirect(url_for("login"))
+    
     conn = get_connection_kantine()
     cursor = conn.cursor()
     cursor.execute("UPDATE orders SET status_levert = TRUE WHERE id = %s", (order_id,))
@@ -290,23 +345,31 @@ def sett_levert(order_id):
     conn.close()
     return redirect(url_for("aktive_bestillinger_i_kantinen"))
 
-
+# Økonomi:
 @app.route("/ferdige-bestillinger")
 def ferdige_bestillinger():
+    role = session.get("active_role")
+    if role != "okonomi":
+        return redirect(url_for("login"))
+    
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("""
-        SELECT * FROM orders
-        WHERE status_levert = TRUE AND status_fakturert = FALSE
+        SELECT * FROM orders 
+        WHERE status_levert = TRUE AND (status_fakturert = FALSE OR status_fakturert IS NULL)
         ORDER BY hent_dato DESC
     """)
-    orders = cursor.fetchall()
+    order_info = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template("okonomi/ferdige_bestillinger.html", orders=orders)
+    return render_template("bestillinger.html", order_info=order_info, role=role)
 
 @app.route("/sett-fakturert/<int:order_id>", methods=["POST"])
 def sett_fakturert(order_id):
+    role = session.get("active_role")
+    if role != "okonomi":
+        return redirect(url_for("login"))
+    
     conn = get_connection_kantine()
     cursor = conn.cursor()
     cursor.execute("UPDATE orders SET status_fakturert = TRUE WHERE id = %s", (order_id,))
@@ -315,141 +378,197 @@ def sett_fakturert(order_id):
     conn.close()
     return redirect(url_for("ferdige_bestillinger"))
 
-
+# Vis kvittering:
 @app.route("/vis-bestilling/<int:order_id>")
 def vis_bestilling(order_id):
+    user = session.get("user")
+    if not user:
+        return redirect(url_for("login"))
+
     conn = get_connection_kantine()
     cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT * FROM orders WHERE id = %s", (order_id,))
-    order = cursor.fetchone()
+    order_info = cursor.fetchone()
     cursor.close()
     conn.close()
+    return render_template("kvittering.html", order_info=order_info, order_array=json.loads(order_info["order_array"]))
 
-    if not order:
-        return "Bestilling ikke funnet"
-
-    ordre_dict = json.loads(order["ordre"]) if order["ordre"] else {}
-    total = sum(item["sum"] for item in ordre_dict.values())
-
-    order_info = {
-        **order,
-        "ordre": ordre_dict,
-        "total": total
-    }
-    return render_template("kvittering.html", order=order_info)
-
+# Admin:
 @app.route('/admin-bestillinger', methods=['GET'])
 def admin_bestillinger():
-    conn_kantine = get_connection_kantine()
-    cursor_kantine = conn_kantine.cursor(dictionary=True)
-    cursor_kantine.execute("SELECT * FROM orders ORDER BY id DESC")
-    orders = cursor_kantine.fetchall()
-    cursor_kantine.close()
-    conn_kantine.close()
-
-    conn_users = get_connection_kantine()
-    cursor_users = conn_users.cursor(dictionary=True)
-    cursor_users.execute("SELECT id, epost FROM users")
-    users = cursor_users.fetchall()
-    cursor_users.close()
-    conn_users.close()
-
-    user_map = {u["epost"]: u["id"] for u in users}
+    role = session.get("active_role")
+    if role != "admin":
+        return redirect(url_for("login"))
     
-    for o in orders:
-        try:
-            ordre_dict = json.loads(o["ordre"]) if o["ordre"] else {}
-            o["total"] = sum(item["sum"] for item in ordre_dict.values())
-        except Exception:
-            o["total"] = 0
-        o["user_id"] = user_map.get(o["epost"], "Ukjent")
+    conn_kantine = get_connection_kantine()
+    cursor = conn_kantine.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM orders ORDER BY id DESC")
+    order_info = cursor.fetchall()
+    cursor.execute("SELECT * FROM users")
+    users_info = cursor.fetchall()
+    cursor.close()
+    conn_kantine.close()
+    return render_template("bestillinger.html", order_info=order_info, users_info=users_info, role=role)
 
-    return render_template("admin/admin_bestillinger.html", orders=orders)
+@app.route('/slett-bestilling/<int:order_id>', methods=["POST"])
+def slett_bestilling(order_id):
+    role = session.get("active_role")
+    if role != "admin":
+        return redirect(url_for("login"))
+    
+    conn = get_connection_kantine()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM orders WHERE id = %s", (order_id,))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return redirect(url_for("admin_bestillinger"))
+# ↑ Bestillinger ↑
 
+def _table_for(menu_source):
+    if menu_source == "kantine":
+        return "menu_kantine"
+    if menu_source == "wakeup":
+        return "menu_wakeup"
+    return None
+
+def get_menu_items(menu_source):
+    table = _table_for(menu_source)
+    if not table:
+        return []
+    conn = get_connection_kantine()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(f"SELECT * FROM {table} WHERE active=TRUE ORDER BY position ASC, id ASC")
+    items = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return items
+
+@app.route("/bestille-fra-kantina")
+def bestille_fra_kantina():
+    user = session.get("user")
+    if not user:
+        return redirect(url_for("login"))
+    session["menu_source"] = "kantine"
+    categories = {}
+    items = get_menu_items("kantine")
+    for item in items:
+        categories.setdefault(item["category"] or "Ukjent", []).append(item)
+    return render_template("personlig/bestille_mat.html", categories=categories, menu_source="kantine")
+
+@app.route("/bestille-fra-WAKEUP")
+def bestille_fra_WAKEUP():
+    user = session.get("user")
+    if not user:
+        return redirect(url_for("login"))
+    session["menu_source"] = "wakeup"
+    categories = {}
+    items = get_menu_items("wakeup")
+    for item in items:
+        categories.setdefault(item["category"] or "Ukjent", []).append(item)
+    return render_template("personlig/bestille_mat.html", categories=categories, menu_source="wakeup")
 
 @app.route('/submit', methods=['POST'])
 def submit():
-    navn = request.form.get('navn')
-    mobil = request.form.get('mobil')
-    organisasjonsnummer = request.form.get('organisasjonsnummer')
-    fakturaadresse = request.form.get('fakturaadresse')
-    epost = request.form.get('epost')
-    ressursnummer = request.form.get('ressursnummer')
-    koststed = request.form.get('koststed')
-    if koststed == "other":
-        koststed = request.form.get("koststedCustom", "").strip() or "Ukjent"
+    user_id = session.get("id")
 
+    # Menu source
+    menu_source = session.get("menu_source")
+    menu_items = get_menu_items(menu_source)
+
+    # Dato, tid og melding
+    ordre_dato = datetime.now()
+    ordre_tid = datetime.now().strftime("%H:%M")
     hent_dato = request.form.get('hent_dato')
     hent_tid = request.form.get('hent_tid')
     melding = request.form.get('melding')
 
-    spise_i_kantina_bool = 'spise_i_kantina' in request.form
-    antall_personer = request.form.get('antall_personer', '').strip()
-    spise_i_kantina = f"Ja, {antall_personer} personer" if spise_i_kantina_bool else "Nei"
+    # Tell summen
+    order_array = {}
+    ordresum = 0
 
-    meny = {
-        "antall_Kaffekanne_1l": {"navn": "Kaffekanne 1 liter", "pris": 90},
-        "antall_Kaffekontainer_5l": {"navn": "Kaffekontainer 5 liter", "pris": 250},
-        "antall_Brus": {"navn": "Brus", "pris": 35},
-        "antall_Mineralvann": {"navn": "Mineralvann m/u kullsyre", "pris": 25},
-        "antall_Juice": {"navn": "Liten juice (eple/appelsin)", "pris": 20},
-        "antall_Melk": {"navn": "Melk 1 liter", "pris": 35},
-        "antall_Oksegryte": {"navn": "Oksegryte med ris", "pris": 165},
-        "antall_ChiliSinCarne": {"navn": "Chili sin carne", "pris": 155},
-        "antall_Kyllinggryte": {"navn": "Kyllinggryte med ris/poteter", "pris": 165},
-        "antall_FruktOppskåret": {"navn": "Sesongens frukt (oppskåret)", "pris": 40},
-        "antall_FruktTwist": {"navn": "Sesongens frukt med Twist", "pris": 50},
-        "antall_Nøttemiks": {"navn": "Nøttemiks", "pris": 29},
-        "antall_Kjeks": {"navn": "Kjeks (pris pr person)", "pris": 19},
-        "antall_Muffins": {"navn": "Muffins", "pris": 25},
-        "antall_Kake": {"navn": "Dagens kake", "pris": 30},
-        "antall_Cæsarsalat": {"navn": "Cæsarsalat med kylling", "pris": 79},
-        "antall_Tunfisksalat": {"navn": "Salat med tunfisk og egg", "pris": 79},
-        "antall_KyllingPesto": {"navn": "Salat med kylling og pesto", "pris": 79}
-    }
+    for ordered_item, ordered_amount in request.form.items():
+        if ordered_item.startswith("item_") and ordered_amount and int(ordered_amount) > 0:
+            for item in menu_items:
+                if item['id'] == int(ordered_item[5:]):
+                    sum = int(item['price']) * int(ordered_amount)
+                    ordresum = ordresum + sum
+                    order_array[item["title"]] = {"antall": int(ordered_amount), "pris": int(item['price']), "sum": int(sum)}
 
-    ordre = {}
-    total = 0
-    for key, val in request.form.items():
-        if key in meny and val and int(val) > 0:
-            antall = int(val)
-            pris = meny[key]["pris"]
-            sum_vare = antall * pris
-            ordre[meny[key]["navn"]] = {"antall": antall, "pris": pris, "sum": sum_vare}
-            total += sum_vare
+    if menu_source == "kantine":
+        # Kundeinformasjon
+        navn = request.form.get('navn')
+        mobil = request.form.get('mobil')
+        organisasjonsnummer = request.form.get('organisasjonsnummer')
+        fakturaadresse = request.form.get('fakturaadresse')
+        epost = request.form.get('epost')
+        ressursnummer = request.form.get('ressursnummer')
+        koststed = request.form.get('koststed')
+        if koststed == "other":
+                koststed = request.form.get("koststedCustom", "").strip() or "Ukjent"
 
-    try:
+        # Oppdater kundeinformasjon
         conn = get_connection_kantine()
         cursor = conn.cursor()
-        sql = """
-            INSERT INTO orders
-            (navn, mobil, organisasjonsnummer, fakturaadresse, epost, ressursnummer,
-             koststed, hent_dato, hent_tid, spise_i_kantina, melding, ordre)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        """
-        cursor.execute(sql, (
-            navn, mobil, organisasjonsnummer, fakturaadresse, epost, ressursnummer,
-            koststed, hent_dato, hent_tid, spise_i_kantina, melding, json.dumps(ordre)
-        ))
+        cursor.execute("""
+            UPDATE users SET navn=%s, epost=%s, mobil=%s, organisasjonsnummer=%s, fakturaadresse=%s, ressursnummer=%s, koststed=%s
+            WHERE id=%s
+        """, (navn, epost, mobil, organisasjonsnummer, fakturaadresse, ressursnummer, koststed, user_id))
         conn.commit()
         cursor.close()
         conn.close()
-    except Error as e:
-        return f"Databasefeil: {e}"
 
-    order_info = {
-        "navn": navn, "mobil": mobil, "epost": epost,
-        "organisasjonsnummer": organisasjonsnummer,
-        "fakturaadresse": fakturaadresse,
-        "ressursnummer": ressursnummer,
-        "koststed": koststed,
-        "hent_dato": hent_dato, "hent_tid": hent_tid,
-        "spise_i_kantina": spise_i_kantina,
-        "melding": melding,
-        "ordre": ordre, "total": total
-    }
+        # Spise i kantina
+        spise_i_kantina_bool = 'spise_i_kantina' in request.form
+        antall_personer = request.form.get('antall_personer', '').strip()
+        spise_i_kantina = f"Ja, {antall_personer} personer" if spise_i_kantina_bool else "Nei"
 
-    return render_template("kvittering.html", order=order_info)
+        # Legg til bestillingen
+        try:
+            conn = get_connection_kantine()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("""
+                INSERT INTO orders
+                (kunde_id, navn, mobil, organisasjonsnummer, fakturaadresse, epost, ressursnummer, 
+                koststed, ordre_dato, ordre_tid, hent_dato, hent_tid, spise_i_kantina, melding, order_array, sum)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, (
+                user_id, navn, mobil, organisasjonsnummer, fakturaadresse, epost,
+                ressursnummer, koststed, ordre_dato, ordre_tid, hent_dato, hent_tid,
+                spise_i_kantina, melding, json.dumps(order_array), ordresum
+            ))
+            conn.commit()
+            order_id = cursor.lastrowid
+            cursor.execute("SELECT * FROM orders WHERE id=%s", (order_id,))
+            order_info = cursor.fetchone()
+            cursor.close()
+            conn.close()
+        except Error as e:
+                return f"Databasefeil: {e}"
+
+    elif menu_source == "wakeup":
+        navn = request.form.get('navn')
+        epost = request.form.get('epost')
+        mobil = request.form.get('mobil')
+
+        conn = get_connection_kantine()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("""
+            INSERT INTO orders
+            (kunde_id, navn, epost, mobil, ordre_dato, ordre_tid, hent_dato, hent_tid, order_array, sum)
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """, (
+            user_id, navn, epost, mobil, ordre_dato, ordre_tid, hent_dato, hent_tid, json.dumps(order_array), ordresum
+        ))
+        conn.commit()
+        order_id = cursor.lastrowid
+        cursor.execute("SELECT * FROM orders WHERE id=%s", (order_id,))
+        order_info = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+
+    return render_template("kvittering.html", order_info=order_info, order_array=json.loads(order_info["order_array"]))
 
 
 
