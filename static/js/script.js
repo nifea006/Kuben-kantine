@@ -2,10 +2,10 @@
 // Kundeinformasjon
 function toggleKoststedInput() {
     const select = document.getElementById('koststedSelect');
-    const input = document.getElementById('koststedInput');
+    const label = document.getElementById('koststedLabelInput');
 
-    input.style.display = select.value === 'other' ? 'inline-block' : 'none';
-    input.required = select.value === 'other';
+    label.style.display = select.value === 'other' ? 'inline-block' : 'none';
+    label.required = select.value === 'other';
 }
 
 // Dato
@@ -105,17 +105,50 @@ function toggleReadMore(event) {
 // Submenu function
 function toggleSubMenu() {
     const submenu = document.querySelector('.submenu');
-    const hideMainChoices = document.querySelectorAll('.main-menu-li');
+    const iconUse = document.getElementById('plusMinusIcon');
 
-    if (submenu.style.display === 'none') {
-        submenu.style.display = 'block';
-        hideMainChoices.forEach(li => {
-            li.style.display = 'none';
-        });
+    submenu.classList.toggle('open');
+
+    if (submenu.classList.contains('open')) {
+        iconUse.setAttribute('href', '#icon-minus');
     } else {
-        submenu.style.display = 'none';
-        hideMainChoices.forEach(li => {
-            li.style.display = 'block';
-        });
+        iconUse.setAttribute('href', '#icon-plus');
     }
+}
+
+// Dark mode
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("themeToggle");
+    const icon = document.getElementById("themeIcon");
+
+    if (!btn || !icon) return;
+
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
+        document.body.classList.add("dark");
+        icon.setAttribute("href", "#icon-sun");
+    }
+
+    btn.addEventListener("click", () => {
+        const isDark = document.body.classList.toggle("dark");
+
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+
+        icon.setAttribute("href", isDark ? "#icon-sun" : "#icon-moon");
+    });
+});
+
+// Back to top
+const backToTop = document.getElementById("backToTop");
+
+window.addEventListener("scroll", () => {
+    if (window.scrollY > 150) {
+        backToTop.style.display = 'block';
+    } else {
+        backToTop.style.display = 'none';
+    }
+});
+
+if (backToTop) {
+    backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }

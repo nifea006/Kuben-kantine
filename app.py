@@ -250,7 +250,7 @@ def main_menu():
     if not role:
         return redirect(url_for("login"))
 
-    return render_template("main_menu.html", role=role)
+    return render_template("navigation/main_menu.html", role=role)
 
 @app.route("/admin-brukere", methods=["GET", "POST"])
 def admin_brukere():
@@ -454,7 +454,10 @@ def bestille_fra_kantina():
     items = get_menu_items("kantine")
     for item in items:
         categories.setdefault(item["category"] or "Ukjent", []).append(item)
-    return render_template("personlig/bestille_mat.html", categories=categories, menu_source="kantine")
+    return render_template("personlig/bestille_mat.html", 
+    categories=categories, 
+    menu_source="kantine", 
+    user=session.get("user"))
 
 @app.route("/bestille-fra-WAKEUP")
 def bestille_fra_WAKEUP():

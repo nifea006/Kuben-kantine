@@ -5,97 +5,132 @@
     <meta charset="UTF-8">
     <title>Bestill mat</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </head>
 
 <body>
-    {% include "_navbar.html" %}
-
-    <h1>Bestillingsskjema</h1>
+    {% include "navigation/_navbar.html" %}
 
     <form id="bestilling-form" action="/submit" method="POST">
+        <h1>Bestillingsskjema</h1>
         {% if menu_source == 'kantine'%}
         <div class="bruker-info">
             <div class="Kundeinformasjon">
                 <h2>Kundeinformasjon</h2>
-                <div><label>Navn:<input name="navn" required></label></div>
-                <div><label>E-post:<input type="email" name="epost" required></label></div>
-                <div><label>Mobil:<input name="mobil" required></label></div>
-                <div><label>Organisasjonsnummer:<input name="organisasjonsnummer"></label></div>
-                <div><label>Fakturaadresse:<input name="fakturaadresse"></label></div>
-                <div><label>Ressursnummer:<input name="ressursnummer"></label></div>
+
+                <label>Navn:
+                    <input name="navn" value="{{ user.navn or '' }}" required>
+                </label>
+
+                <label>E-post:
+                    <input type="email" name="epost" value="{{ user.epost or '' }}" required>
+                </label>
+
+                <label>Mobil:
+                    <input name="mobil" value="{{ user.mobil or '' }}" required>
+                </label>
+
+                <label>Organisasjonsnummer:
+                    <input name="organisasjonsnummer" value="{{ user.organisasjonsnummer or '' }}">
+                </label>
+
+                <label>Fakturaadresse:
+                    <input name="fakturaadresse" value="{{ user.fakturaadresse or '' }}">
+                </label>
+
+                <label>Ressursnummer:
+                    <input name="ressursnummer" value="{{ user.ressursnummer or '' }}">
+                </label>
+
+                <label class="koststed-label">Koststed:
+                    <select name="koststed" id="koststedSelect" onchange="toggleKoststedInput()" required>
+                        <option value="">-Velg koststed-</option>
+                        {% set saved = user.koststed %}
+                        {% for value,option in [
+                        ('12451-Rektor','12451 Rektor'),
+                        ('12453-Internasjonalisering','12453 Internasjonalisering (Kristin)'),
+                        ('12454-Elevkontoret','12454 Elevkontoret'),
+                        ('12455-Elevtjenesten','12455 Elevtjenesten'),
+                        ('12465-Fellesfag-ST','12465 Fellesfag ST'),
+                        ('12470-Bygg','12470 Bygg'),
+                        ('12472-Helse-og-oppvekst','12472 Helse- og oppvekst'),
+                        ('12474-Elektro','12474 Elektro'),
+                        ('12475-TEK','12475 TEK'),
+                        ('12476-IM','12476 IM'),
+                        ('12478-OT','12478 OT'),
+                        ('12484-ED-nettverket','12484 ED-nettverket'),
+                        ('12485-Karriereenheten','12485 Karriereenheten'),
+                        ('12488-KKT','12488 KKT'),
+                        ('12491-Økonomi-adm','12491 Økonomi/adm'),
+                        ('12493-Kantine','12493 Kantine'),
+                        ('12494-Teknisk-drift','12494 Teknisk drift'),
+                        ('12495-Husleie-energi-renhold','12495 Husleie, energi, renhold'),
+                        ('12498-Teknisk-støtte-IKT','12498 Teknisk støtte (IKT)'),
+                        ('12898-MO','12898 MO'),
+                        ('12920-Fagskolen-i-Oslo','12920 Fagskolen i Oslo'),
+                        ('other','Annet')
+                        ] %}
+                        <option value="{{ value }}" {% if saved==value %}selected{% endif %}>
+                            {{ option }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </label>
+
+                <label style="display: none;" id="koststedLabelInput">
+                    Annet:<input type="text" name="koststedCustom">
+                </label>
+            </div>
+
+
+
+            <div class="Henting">
+                <h2>Hentetidspunkt</h2>
                 <div>
-                    <label>Koststed:
-                        <div id="select-input">
-                            <select name="koststed" id="koststedSelect" onchange="toggleKoststedInput()" required>
-                                <option value="">-Velg koststed-</option>
-                                <option value="12451-Rektor">12451 Rektor</option>
-                                <option value="12453-Internasjonalisering">12453 Internasjonalisering (Kristin)</option>
-                                <option value="12454-Elevkontoret">12454 Elevkontoret</option>
-                                <option value="12455-Elevtjenesten">12455 Elevtjenesten</option>
-                                <option value="12465-Fellesfag-ST">12465 Fellesfag ST</option>
-                                <option value="12470-Bygg">12470 Bygg</option>
-                                <option value="12472-Helse-og-oppvekst">12472 Helse- og oppvekst</option>
-                                <option value="12474-Elektro">12474 Elektro</option>
-                                <option value="12475-TEK">12475 TEK</option>
-                                <option value="12476-IM">12476 IM</option>
-                                <option value="12478-OT">12478 OT</option>
-                                <option value="12484-ED-nettverket">12484 ED-nettverket</option>
-                                <option value="12485-Karriereenheten">12485 Karriereenheten</option>
-                                <option value="12488-KKT">12488 KKT</option>
-                                <option value="12491-Økonomi-adm">12491 Økonomi/adm</option>
-                                <option value="12493-Kantine">12493 Kantine</option>
-                                <option value="12494-Teknisk-drift">12494 Teknisk drift - vedlikehold</option>
-                                <option value="12495-Husleie-energi-renhold">12495 Husleie, energi, renhold</option>
-                                <option value="12498-Teknisk-støtte-IKT">12498 Teknisk støtte (IKT)</option>
-                                <option value="12898-MO">12898 MO</option>
-                                <option value="12920-Fagskolen-i-Oslo">12920 Fagskolen i Oslo</option>
-                                <option value="other">Annet</option>
-                            </select>
-                            <input style="margin-top: 10px; display: none;" type="text" name="koststedCustom"
-                                id="koststedInput" placeholder="Skriv inn koststedet" style="display:none;">
-                    </label>
+                    <label>Dato:<input type="date" name="hent_dato" required></label>
+                </div>
+                <div>
+                    <label>Tid:<input type="time" name="hent_tid" required></label>
+                </div>
+                <div>
+                    <label><input style="width: auto;" type="checkbox" name="spise_i_kantina" id="spise_i_kantina"
+                            onchange="toggleSpiseIKantina()"> Spise i kantina</label>
+                    <input type="number" name="antall_personer" id="antallContainer" min="1"
+                        placeholder="Antall personer" style="display:none;">
                 </div>
             </div>
         </div>
 
-        <div class="Henting">
-            <h2>Hentetidspunkt</h2>
-            <div>
-                <label>Dato:<input type="date" name="hent_dato" required></label>
-            </div>
-            <div>
-                <label>Tid:<input type="time" name="hent_tid" required></label>
-            </div>
-            <div>
-                <label><input style="width: auto;" type="checkbox" name="spise_i_kantina" id="spise_i_kantina"
-                        onchange="toggleSpiseIKantina()"> Spise i kantina</label>
-                <input type="number" name="antall_personer" id="antallContainer" min="1" placeholder="Antall personer"
-                    style="display:none;">
-            </div>
-        </div>
-
         <section id="Meny">
-            <h2>Meny</h2>
+            <h1>Meny</h1>
             {% for category, items in categories.items() %}
-            <h3>{{ category }}</h3>
+            <h2>{{ category }}</h2>
             <div class="menu-category">
                 {% for item in items %}
                 <div class="menu-item">
                     <img src="#" alt="Bilde av {{ item.title }}" width="150" height="200">
                     <div class="information">
                         <p style="text-align: center;">{{ item.title }}</p>
-                        <p class="les-mer" onclick="toggleReadMore(event)">Les mer ▼</p>
-                        <p class="description" style="display: none;">{{ item.description or "" }}</p>
-                        <p>{{ item.price | int }} kr</p>
+                        <p class="les-mer" style="text-align: center;" onclick="toggleReadMore(event)">Les mer ▼</p>
+                        <p class="description" style="display: none; text-align: center;">{{ item.description or ""
+                            }}
+                        </p>
+                        <p style="text-align: center;">{{ item.price | int }} kr</p>
                         <div class="antall-div">
-                            <button class="plus" type="button" onclick="changeQuantity('{{ item.id }}', +1)">+</button>
+                            <button class="plus" type="button" onclick="changeQuantity('{{ item.id }}', +1)">
+                                <svg class="icon">
+                                    <use href="#icon-plus"></use>
+                                </svg>
+                            </button>
                             <p class="antall-p" name="{{ item.id }}" onclick="editQuantity('{{ item.id }}')"
                                 tabindex="0">0
                             </p>
                             <input class="antall-input" type="number" name="item_{{ item.id }}" min="0"
-                                style="width: 20px; text-align: center; display: none;">
-                            <button class="minus" type="button" onclick="changeQuantity('{{ item.id }}', -1)">-</button>
+                                style="text-align: center; display: none;">
+                            <button class="minus" type="button" onclick="changeQuantity('{{ item.id }}', -1)">
+                                <svg class="icon">
+                                    <use href="#icon-minus"></use>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -104,49 +139,63 @@
             {% endfor %}
         </section>
         <div style="width: 100%;">
-            <h3>Melding til kantina</h3>
+            <h2>Melding til kantina</h2>
             <textarea name="melding" rows="4" cols="40" placeholder="f.eks. allergier"></textarea>
         </div>
         <button id="submitButton" type="submit">Send bestilling</button>
 
+
+
         {% elif menu_source == 'wakeup' %}
         <div class="bruker-info">
             <div class="Kundeinformasjon">
+                <h2>Kontaktinformasjon</h2>
                 <label>Navn:<input name="navn" required></label>
                 <label>E-post:<input type="email" name="epost" required></label>
                 <label>Mobil:<input name="mobil" required></label>
             </div>
-        </div>
-        <div class="Henting">
-            <h2>Hentetidspunkt</h2>
-            <div>
-                <label>Dato:<input type="date" name="hent_dato" required></label>
-            </div>
-            <div>
-                <label>Tid:<input type="time" name="hent_tid" required></label>
+
+            <div class="Henting">
+                <h2>Hentetidspunkt</h2>
+                <div>
+                    <label>Dato:<input type="date" name="hent_dato" required></label>
+                </div>
+                <div>
+                    <label>Tid:<input type="time" name="hent_tid" required></label>
+                </div>
             </div>
         </div>
         <section id="Meny">
             <h2>Meny</h2>
             {% for category, items in categories.items() %}
-            <h3>{{ category }}</h3>
+            <h2>{{ category }}</h2>
             <div class="menu-category">
                 {% for item in items %}
                 <div class="menu-item">
                     <img src="#" alt="Bilde av {{ item.title }}" width="150" height="200">
                     <div class="information">
                         <p style="text-align: center;">{{ item.title }}</p>
-                        <p class="les-mer" onclick="toggleReadMore(event)">Les mer ▼</p>
-                        <p class="description" style="display: none;">{{ item.description or "" }}</p>
-                        <p>{{ item.price | int }} kr</p>
+                        <p class="les-mer" style="text-align: center;" onclick="toggleReadMore(event)">Les mer ▼</p>
+                        <p class="description" style="display: none; text-align: center;">{{ item.description or ""
+                            }}
+                        </p>
+                        <p style="text-align: center;">{{ item.price | int }} kr</p>
                         <div class="antall-div">
-                            <button class="plus" type="button" onclick="changeQuantity('{{ item.id }}', +1)">+</button>
+                            <button class="plus" type="button" onclick="changeQuantity('{{ item.id }}', +1)">
+                                <svg class="icon">
+                                    <use href="#icon-plus"></use>
+                                </svg>
+                            </button>
                             <p class="antall-p" name="{{ item.id }}" onclick="editQuantity('{{ item.id }}')"
                                 tabindex="0">0
                             </p>
                             <input class="antall-input" type="number" name="item_{{ item.id }}" min="0"
-                                style="width: 20px; text-align: center; display: none;">
-                            <button class="minus" type="button" onclick="changeQuantity('{{ item.id }}', -1)">-</button>
+                                style="text-align: center; display: none;">
+                            <button class="minus" type="button" onclick="changeQuantity('{{ item.id }}', -1)">
+                                <svg class="icon">
+                                    <use href="#icon-minus"></use>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -158,6 +207,8 @@
         {% endif %}
     </form>
 
+    {% include "navigation/back_to_top.html" %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>

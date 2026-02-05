@@ -8,7 +8,7 @@
 </head>
 
 <body>
-    {% include "_navbar.html" %}
+    {% include "navigation/_navbar.html" %}
 
     <h2>Brukeradministrasjon</h2>
     <table border="1" cellpadding="8">
@@ -47,6 +47,8 @@
         {% endfor %}
     </table>
 
+    {% include "navigation/back_to_top.html" %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>

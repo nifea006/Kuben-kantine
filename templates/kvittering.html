@@ -8,15 +8,17 @@
 </head>
 
 <body>
-    {% include "_navbar.html" %}
+    {% include "navigation/_navbar.html" %}
 
-    <div class="receipt">
+    <div class="receipt centered-page">
         <h1>Kvittering</h1>
         <p><strong>Navn:</strong> {{ order_info.navn }}</p>
         <p><strong>E-post:</strong> {{ order_info.epost }}</p>
         <p><strong>Mobil:</strong> {{ order_info.mobil }}</p>
-        <p><strong>Bestilt:</strong> {{ order_info.ordre_dato | format_date }} | {{ order_info.ordre_tid | format_time }}</p>
-        <p><strong>Hentes:</strong> {{ order_info.hent_dato | format_date }} | {{ order_info.hent_tid | format_time }}</p>
+        <p><strong>Bestilt:</strong> {{ order_info.ordre_dato | format_date }} | {{ order_info.ordre_tid | format_time
+            }}</p>
+        <p><strong>Hentes:</strong> {{ order_info.hent_dato | format_date }} | {{ order_info.hent_tid | format_time }}
+        </p>
 
         {% if order_info.koststed %}
         <p><strong>Organisasjonsnummer:</strong> {{ order_info.organisasjonsnummer }}</p>
@@ -45,8 +47,11 @@
             {% endfor %}
         </table>
 
-        <p class="total">Totalt: {{ order_info.sum | int }} kr</p>
+        <p><strong>Totalt: {{ order_info.sum | int }} kr</strong></p>
+    </div>
 
+    {% include "navigation/back_to_top.html" %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>
