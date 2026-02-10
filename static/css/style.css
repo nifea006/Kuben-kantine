@@ -3,7 +3,7 @@
 ---------------------------------*/
 :root {
     --color-bg: #e9e3df;
-    --color-bg-alt: #e7e6e4;
+    --color-bg-alt: #d5d5d5;
     --color-text: #111827;
     --color-text-muted: #6b7280;
     --color-primary: #3b82f6;
@@ -239,10 +239,25 @@ nav.navbar a.active {
 
 .category-header {
     display: flex;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
     margin-bottom: 0.75rem;
+}
+
+.category-name-input {
+    display: flex;
+    border: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    background: none;
+}
+
+.category-name-input:focus {
+    background: var(--color-bg-alt);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 30%, transparent);
+    outline: none;
 }
 
 .category-actions {
@@ -254,6 +269,96 @@ nav.navbar a.active {
     display: flex;
     align-items: flex-start;
     gap: 0.75rem;
+}
+
+.search-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 1rem;
+}
+
+.user-search {
+    width: min(420px, 100%);
+}
+
+.user-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.user-card {
+    padding: 0.85rem;
+}
+
+.user-card-main {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr auto;
+    gap: 0.75rem;
+    align-items: start;
+}
+
+.user-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.user-id {
+    font-weight: 700;
+    color: var(--color-primary);
+}
+
+.user-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.user-email {
+    color: var(--color-text-muted);
+    word-break: break-all;
+}
+
+.user-roles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+}
+
+.user-roles label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.user-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.user-details {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+    .user-card-main {
+        grid-template-columns: 1fr;
+    }
+
+    .user-actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 900px) {
+    .user-cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 .menu-item {
@@ -637,6 +742,17 @@ span.icon {
     text-align: left;
 }
 
+.order-item {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius);
+    padding: 1rem;
+    width: 250px;
+    box-shadow: 0 2px 6px var(--color-card-shadow);
+}
+
 .committing-lever::after {
     content: "✓ Levert";
     position: absolute;
@@ -808,5 +924,69 @@ a {
 
     .main-menu-ul {
         gap: 0.75rem;
+    }
+}
+
+@media (max-width: 900px) {
+    .centered-page {
+        width: 95vw;
+        padding: 1.5rem;
+    }
+
+    .bruker-info {
+        flex-direction: column;
+    }
+
+    .Kundeinformasjon,
+    .Henting {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .menu-item {
+        width: 100%;
+    }
+
+    .menu-category {
+        gap: 12px;
+    }
+
+    .main-menu-li button {
+        width: 90vw;
+    }
+
+    .submenu button {
+        width: 80vw;
+    }
+
+    .centered-page .menu-category {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+}
+
+@media (max-width: 600px) {
+    input,
+    select,
+    textarea {
+        width: 100%;
+    }
+
+    .menu-category {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .menu-item-image img,
+    .menu-item img {
+        width: 100%;
+        height: auto;
+    }
+
+    .centered-page {
+        padding: 1rem;
+    }
+
+    .centered-page .menu-category {
+        grid-template-columns: 1fr !important;
     }
 }

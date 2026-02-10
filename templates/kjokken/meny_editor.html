@@ -45,7 +45,8 @@
             {% for category, items in categories.items() %}
             <div class="category-block" data-category="{{ category }}">
                 <div class="category-header">
-                    <h2>{{ category }}</h2>
+                    <input class="category-name-input" type="text" value="{{ category }}"
+                        oninput="renameCategory(this)">
                     <div class="category-actions">
                         <button type="button" onclick="moveCategory(this, -1)">
                             <svg class="icon">
@@ -57,6 +58,11 @@
                                 <use href="#icon-arrow-down"></use>
                             </svg>
                         </button>
+                        <button type="button" class="btn-danger" onclick="deleteCategory(this)">
+                            <svg class="icon">
+                                <use href="#icon-trash"></use>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <div class="menu-category" data-category="{{ category }}">
@@ -65,6 +71,7 @@
                     <div class="menu-item" id="menu_item_{{ item.id }}">
                         <input type="hidden" name="item_id" value="{{ item.id }}">
                         <input type="hidden" name="delete_{{ item.id }}" value="0">
+                        <input type="hidden" name="old_category_{{ item.id }}" value="{{ category }}">
 
                         <div class="menu-item-image">
                             <img id="image_preview_{{ item.id }}" src="{{ item.image_url or '' }}"
@@ -79,14 +86,15 @@
                         <div class="information">
                             <input class="plain-input display-title" type="text" name="title_{{ item.id }}"
                                 value="{{ item.title }}" placeholder="Tittel">
-                            <select class="plain-input display-category" name="category_{{ item.id }}">
-                                {% if item.category and item.category not in category_list %}
-                                <option value="{{ item.category }}">{{ item.category }}</option>
-                                {% endif %}
-                                {% for c in category_list %}
-                                <option value="{{ c }}" {% if c==item.category %}selected{% endif %}>{{ c }}</option>
-                                {% endfor %}
-                            </select>
+                        <select class="plain-input display-category" name="category_{{ item.id }}"
+                            data-selected="{{ item.category or '' }}">
+                            {% if item.category and item.category not in category_list %}
+                            <option value="{{ item.category }}">{{ item.category }}</option>
+                            {% endif %}
+                            {% for c in category_list %}
+                            <option value="{{ c }}" {% if c==item.category %}selected{% endif %}>{{ c }}</option>
+                            {% endfor %}
+                        </select>
 
                             <p class="les-mer display-field" onclick="toggleReadMore(event)">
                                 Vis detaljer ▼
@@ -121,6 +129,8 @@
                         </svg>
                         <span>Legg til vare</span>
                     </div>
+                    <input type="hidden" name="category_name" value="{{ category }}">
+                    <input type="hidden" name="category_deleted_{{ category }}" value="0">
                 </div>
             </div>
             {% endfor %}

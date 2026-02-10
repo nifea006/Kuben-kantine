@@ -597,13 +597,14 @@ def meny_editor(menu_source):
         conn = get_connection_kantine()
         cursor = conn.cursor()
 
-        # Update category order and create new categories
+        # Update category order and create/rename categories
         raw_order = request.form.getlist("category_order")
         new_categories = request.form.getlist("new_category")
+        category_names = request.form.getlist("category_name")
 
         order_list = []
         seen = set()
-        for name in raw_order + new_categories:
+        for name in raw_order + category_names + new_categories:
             clean = (name or "").strip()
             if not clean or clean in seen:
                 continue
@@ -619,6 +620,14 @@ def meny_editor(menu_source):
                     ON DUPLICATE KEY UPDATE sort_order = VALUES(sort_order)
                     """,
                     (menu_source, name, idx),
+                )
+
+        # Handle deleted categories
+        for name in order_list:
+            if request.form.get(f"category_deleted_{name}") == "1":
+                cursor.execute(
+                    "DELETE FROM menu_categories WHERE menu_source = %s AND name = %s",
+                    (menu_source, name),
                 )
 
         # Update or delete existing items

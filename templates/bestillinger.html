@@ -19,11 +19,21 @@
             {% endif %}
         </h1>
 
+        {% if role != 'personlig' %}
+        <div class="search-toolbar">
+            <input id="userSearch" class="user-search" type="text" placeholder="Søk etter navn..."
+                oninput="filterUsers()">
+            <svg class="icon">
+                <use href="#icon-search"></use>
+            </svg>
+        </div>
+        {% endif %}
+
         <div class="menu-category" style="display: grid; grid-template-columns: repeat(3, 1fr);">
 
             {% if order_info %}
             {% for o in order_info %}
-            <div id="order-card-{{ o.id }}" class="menu-item receipt-card">
+            <div id="order-card-{{ o.id }}" class="receipt-card order-item" data-client-name="{{ o.navn | lower }}">
 
                 <div class="receipt-header">
                     <h3>#{{ o.id }}</h3>
@@ -39,7 +49,7 @@
                 <div class="receipt-body">
 
                     {% if role != 'personlig' %}
-                    <p><strong>Kunde:</strong> {{ o.navn }}</p>
+                    <p id="kunde-navn"><strong>Kunde:</strong> {{ o.navn }}</p>
                     {% endif %}
                     {% if o.spise_i_kantina != 'Nei' and o.menu_source == 'Kantina' %}
                     <p><strong>Kommer:</strong> {{ o.hent_dato | format_date }} | kl. {{ o.hent_tid | format_time }}</p>

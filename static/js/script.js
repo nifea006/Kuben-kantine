@@ -123,6 +123,23 @@ function toggleReadMore(event) {
     }
 }
 
+// Admin users: search by name
+function filterUsers() {
+    const input = document.getElementById("userSearch");
+    if (!input) return;
+    const value = input.value.trim().toLowerCase();
+    const userCards = document.querySelectorAll(".user-card");
+    userCards.forEach(card => {
+        const name = card.dataset.userName || "";
+        card.style.display = name.includes(value) ? "" : "none";
+    });
+    const receiptCards = document.querySelectorAll(".receipt-card");
+    receiptCards.forEach(card => {
+        const name = (card.dataset.clientName || "").toLowerCase();
+        card.style.display = name.includes(value) ? "" : "none";
+    });
+}
+
 // Menu editor: mark item for deletion
 function markDelete(itemId) {
     const item = document.getElementById(`menu_item_${itemId}`);
@@ -229,7 +246,7 @@ function updateCategorySelectOptions() {
     const selects = document.querySelectorAll("select.display-category");
     const names = getCategoryNames();
     selects.forEach(select => {
-        const current = select.value;
+        const current = select.value || select.dataset.selected || "";
         select.innerHTML = names
             .map(name => {
                 const safe = escapeHtml(name);
@@ -292,26 +309,46 @@ function addCategory() {
     const header = document.createElement("div");
     header.className = "category-header";
 
-    const title = document.createElement("h2");
-    title.textContent = name;
+    const title = document.createElement("input");
+    title.type = "text";
+    title.className = "plain-input category-name-input";
+    title.value = name;
+    title.addEventListener("input", () => renameCategory(title));
 
     const actions = document.createElement("div");
     actions.className = "category-actions";
 
     const btnUp = document.createElement("button");
     btnUp.type = "button";
-    btnUp.className = "btn-secondary";
-    btnUp.textContent = "Opp";
+    btnUp.innerHTML = `
+    <svg class="icon">
+        <use href="#icon-arrow-up"></use>
+    </svg>
+    `;
     btnUp.addEventListener("click", () => moveCategory(btnUp, -1));
 
     const btnDown = document.createElement("button");
     btnDown.type = "button";
-    btnDown.className = "btn-secondary";
-    btnDown.textContent = "Ned";
+    btnDown.innerHTML = `
+    <svg class="icon">
+        <use href="#icon-arrow-down"></use>
+    </svg>
+    `;
     btnDown.addEventListener("click", () => moveCategory(btnDown, 1));
+
+    const btnDelete = document.createElement("button");
+    btnDelete.type = "button";
+    btnDelete.className = "btn-danger";
+    btnDelete.innerHTML = `
+    <svg class="icon">
+        <use href="#icon-trash"></use>
+    </svg>
+    `;
+    btnDelete.addEventListener("click", () => deleteCategory(btnDelete));
 
     actions.appendChild(btnUp);
     actions.appendChild(btnDown);
+    actions.appendChild(btnDelete);
 
     header.appendChild(title);
     header.appendChild(actions);
@@ -338,14 +375,59 @@ function addCategory() {
     hidden.name = "new_category";
     hidden.value = name;
 
+    const hiddenName = document.createElement("input");
+    hiddenName.type = "hidden";
+    hiddenName.name = "category_name";
+    hiddenName.value = name;
+
+    const hiddenDeleted = document.createElement("input");
+    hiddenDeleted.type = "hidden";
+    hiddenDeleted.name = `category_deleted_${name}`;
+    hiddenDeleted.value = "0";
+
     block.appendChild(header);
     block.appendChild(menuCategory);
     block.appendChild(hidden);
+    block.appendChild(hiddenName);
+    block.appendChild(hiddenDeleted);
 
     const menuSection = document.getElementById("Meny");
     menuSection.appendChild(block);
 
     input.value = "";
+    updateCategorySelectOptions();
+    rebuildCategoryOrderInputs();
+}
+
+function renameCategory(inputEl) {
+    const block = inputEl.closest(".category-block");
+    if (!block) return;
+    const oldName = block.dataset.category;
+    const newName = inputEl.value.trim() || oldName;
+
+    block.dataset.category = newName;
+
+    const hiddenName = block.querySelector('input[name="category_name"]');
+    if (hiddenName) hiddenName.value = newName;
+
+    const hiddenDeleted = block.querySelector(`input[name="category_deleted_${oldName}"]`);
+    if (hiddenDeleted) hiddenDeleted.name = `category_deleted_${newName}`;
+
+    block.querySelectorAll('input[name^="old_category_"]').forEach(i => {
+        i.value = newName;
+    });
+
+    updateCategorySelectOptions();
+    rebuildCategoryOrderInputs();
+}
+
+function deleteCategory(button) {
+    const block = button.closest(".category-block");
+    if (!block) return;
+    const name = block.dataset.category;
+    const hiddenDeleted = block.querySelector(`input[name="category_deleted_${name}"]`);
+    if (hiddenDeleted) hiddenDeleted.value = "1";
+    block.style.display = "none";
     updateCategorySelectOptions();
     rebuildCategoryOrderInputs();
 }

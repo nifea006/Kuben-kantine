@@ -10,52 +10,72 @@
 <body>
     {% include "navigation/_navbar.html" %}
 
-    <h2>Brukeradministrasjon</h2>
-    <table border="1" cellpadding="8">
-        <tr>
-            <th>ID</th>
-            <th>Navn</th>
-            <th>E-post</th>
-            <th>Roller</th>
-            <th>Oppdater</th>
-        </tr>
-        {% for u in users %}
-        <tr>
-            <form method="POST">
-                <td>
-                    {{ u.id }}
-                </td>
-                <td>{{ u.navn }}</td>
-                <td>{{ u.epost }}</td>
-                <td>
-                    <label><input type="checkbox" name="rolle_personlig" {% if u.rolle_personlig %}checked{% endif %}>
-                        Personlig</label>
-                    <label><input type="checkbox" name="rolle_okonomi" {% if u.rolle_okonomi %}checked{% endif %}>
-                        Økonomi</label>
-                    <label><input type="checkbox" name="rolle_kjokken" {% if u.rolle_kjokken %}checked{% endif %}>
-                        Kjøkken</label>
-                    <label><input type="checkbox" name="rolle_admin" {% if u.rolle_admin %}checked{% endif %}>
-                        Admin</label>
-                </td>
-                <td>
-                    <button type="submit" name="action" value="save">
-                        <svg class="icon">
-                            <use href="#icon-save"></use>
-                        </svg>
-                        Lagre
-                    </button>
-                    <button type="submit" name="action" value="delete"
-                        onclick="return confirm('Er du sikker på at du vil slette brukeren?');">
-                        <svg class="icon">
-                            <use href="#icon-trash"></use>
-                        </svg>
-                        Slett
-                    </button>
-                </td>
-            </form>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="centered-page" style="width: 1200px;">
+        <h2>Brukeradministrasjon</h2>
+
+        <div class="search-toolbar">
+            <input id="userSearch" class="user-search" type="text" placeholder="Søk etter navn..."
+                oninput="filterUsers()">
+            <svg class="icon">
+                <use href="#icon-search"></use>
+            </svg>
+        </div>
+
+        <div class="user-cards">
+            {% for u in users %}
+            <div class="user-card card" data-user-name="{{ u.navn | lower }}">
+                <form method="POST">
+                    <input type="hidden" name="id" value="{{ u.id }}">
+
+                    <div class="user-card-main">
+                        <div class="user-meta">
+                            <div class="user-id">#{{ u.id }}</div>
+                            <div class="user-name">{{ u.navn }}</div>
+                            <div class="user-email">{{ u.epost }}</div>
+                        </div>
+
+                        <div class="user-roles">
+                            <label><input type="checkbox" name="rolle_personlig" {% if u.rolle_personlig %}checked{%
+                                    endif %}> Personlig</label>
+                            <label><input type="checkbox" name="rolle_okonomi" {% if u.rolle_okonomi %}checked{% endif
+                                    %}> Økonomi</label>
+                            <label><input type="checkbox" name="rolle_kjokken" {% if u.rolle_kjokken %}checked{% endif
+                                    %}> Kjøkken</label>
+                            <label><input type="checkbox" name="rolle_admin" {% if u.rolle_admin %}checked{% endif %}>
+                                Admin</label>
+                        </div>
+
+                        <div class="user-actions">
+                            <button type="submit" name="action" value="save">
+                                <svg class="icon">
+                                    <use href="#icon-save"></use>
+                                </svg>
+                                Lagre
+                            </button>
+                            <button type="submit" name="action" value="delete"
+                                onclick="return confirm('Er du sikker på at du vil slette brukeren?');"
+                                class="btn-danger">
+                                <svg class="icon">
+                                    <use href="#icon-trash"></use>
+                                </svg>
+                                Slett
+                            </button>
+                        </div>
+                    </div>
+
+                    <p class="les-mer" onclick="toggleReadMore(event)">Se detaljer ▼</p>
+                    <div class="description user-details" style="display: none;">
+                        <p><strong>Mobil:</strong> {{ u.mobil or "-" }}</p>
+                        <p><strong>Organisasjonsnummer:</strong> {{ u.organisasjonsnummer or "-" }}</p>
+                        <p><strong>Fakturaadresse:</strong> {{ u.fakturaadresse or "-" }}</p>
+                        <p><strong>Ressursnummer:</strong> {{ u.ressursnummer or "-" }}</p>
+                        <p><strong>Koststed:</strong> {{ u.koststed or "-" }}</p>
+                    </div>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
 
     {% include "navigation/back_to_top.html" %}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
