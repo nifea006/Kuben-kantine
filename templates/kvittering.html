@@ -10,25 +10,45 @@
 <body>
     {% include "navigation/_navbar.html" %}
 
-    <div class="receipt centered-page">
+    <div class="receipt centered-page" style="width: 800px;">
+
+        <div class="receipt-header" style="border: none; margin: 0; padding: 0;">
+            <h3>#{{ order_info.id }}</h3>
+            <p style="margin-right: auto; padding-left: 10px;"><strong>{{ order_info.menu_source }}</strong></p>
+            <div class="receipt-date">
+                {{ order_info.ordre_dato | format_date }}<br>
+                {{ order_info.ordre_tid | format_time }}
+            </div>
+        </div>
         <h1>Kvittering</h1>
         <p><strong>Navn:</strong> {{ order_info.navn }}</p>
         <p><strong>E-post:</strong> {{ order_info.epost }}</p>
         <p><strong>Mobil:</strong> {{ order_info.mobil }}</p>
-        <p><strong>Bestilt:</strong> {{ order_info.ordre_dato | format_date }} | {{ order_info.ordre_tid | format_time
-            }}</p>
         <p><strong>Hentes:</strong> {{ order_info.hent_dato | format_date }} | {{ order_info.hent_tid | format_time }}
         </p>
 
-        {% if order_info.koststed %}
+        {% if order_info.organisasjonsnummer %}
         <p><strong>Organisasjonsnummer:</strong> {{ order_info.organisasjonsnummer }}</p>
+        {% endif %}
+        {% if order_info.fakturaadresse %}
         <p><strong>Fakturaadresse:</strong> {{ order_info.fakturaadresse }}</p>
+        {% endif %}
+        {% if order_info.ressursnummer %}
         <p><strong>Ressursnummer:</strong> {{ order_info.ressursnummer }}</p>
+        {% endif %}
+        {% if order_info.koststed %}
         <p><strong>Koststed:</strong> {{ order_info.koststed }}</p>
+        {% endif %}
+        {% if order_info.spise_i_kantina == 'Nei' and order_info.menu_source == 'Kantina' %}
         <p><strong>Spise i kantina:</strong> {{ order_info.spise_i_kantina }}</p>
+        {% endif %}
+        {% if order_info.melding %}
         <p><strong>Melding:</strong> {{ order_info.melding }}</p>
         {% endif %}
 
+        {% if order_info.spise_i_kantina != 'Nei' and order_info.menu_source == 'Kantina' %}
+        <h1>{{ order_info.spise_i_kantina }} skal spise i kantina</h1>
+        {% else %}
         <h3>Bestilte varer</h3>
         <table border="1" cellpadding="8">
             <tr>
@@ -47,7 +67,8 @@
             {% endfor %}
         </table>
 
-        <p><strong>Totalt: {{ order_info.sum | int }} kr</strong></p>
+        <h3><strong>Totalt: {{ order_info.sum | int }} kr</strong> (Betales på stedet)</h3>
+        {% endif %}
     </div>
 
     {% include "navigation/back_to_top.html" %}

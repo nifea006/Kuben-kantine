@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="no">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rediger meny</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        * {
+            width: fit-content;
+        }
+    </style>
+</head>
+
+<body>
+    {% include "navigation/_navbar.html" %}
+
+    <form id="menyEditorForm" action="{{ url_for('meny_editor', menu_source=menu_source) }}" method="POST"
+        enctype="multipart/form-data" style="padding: 1rem;">
+        <h1>Rediger {{ menu_source }} meny</h1>
+        <section id="Meny">
+            <h1>Meny</h1>
+            <button type="submit">
+                <svg class="icon">
+                    <use href="#icon-save"></use>
+                </svg>
+                Lagre endringer
+            </button>
+
+            <br>
+
+            <div class="category-controls">
+                <input id="newCategoryName" type="text" placeholder="Ny kategori">
+
+                <button type="button" onclick="addCategory()" style="min-width: max-content;">
+                    <svg class="icon">
+                        <use href="#icon-plus"></use>
+                    </svg>
+                    Legg til kategori
+                </button>
+            </div>
+
+            <div id="categoryOrderInputs"></div>
+
+            {% for category, items in categories.items() %}
+            <div class="category-block" data-category="{{ category }}">
+                <div class="category-header">
+                    <h2>{{ category }}</h2>
+                    <div class="category-actions">
+                        <button type="button" onclick="moveCategory(this, -1)">
+                            <svg class="icon">
+                                <use href="#icon-arrow-up"></use>
+                            </svg>
+                        </button>
+                        <button type="button" onclick="moveCategory(this, 1)">
+                            <svg class="icon">
+                                <use href="#icon-arrow-down"></use>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="menu-category" data-category="{{ category }}">
+
+                    {% for item in items %}
+                    <div class="menu-item" id="menu_item_{{ item.id }}">
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <input type="hidden" name="delete_{{ item.id }}" value="0">
+
+                        <div class="menu-item-image">
+                            <img id="image_preview_{{ item.id }}" src="{{ item.image_url or '' }}"
+                                alt="Bilde av {{ item.title }}" width="150" height="200"
+                                onclick="triggerImageUpload('image_file_{{ item.id }}')">
+                            <input class="image-input" type="file" name="image_file_{{ item.id }}"
+                                id="image_file_{{ item.id }}" accept=".png,.jpg,.jpeg,.gif,.webp"
+                                onchange="previewImage(event, 'image_preview_{{ item.id }}')">
+                            <input type="hidden" name="image_url_{{ item.id }}" value="{{ item.image_url or '' }}">
+                        </div>
+
+                        <div class="information">
+                            <input class="plain-input display-title" type="text" name="title_{{ item.id }}"
+                                value="{{ item.title }}" placeholder="Tittel">
+                            <select class="plain-input display-category" name="category_{{ item.id }}">
+                                {% if item.category and item.category not in category_list %}
+                                <option value="{{ item.category }}">{{ item.category }}</option>
+                                {% endif %}
+                                {% for c in category_list %}
+                                <option value="{{ c }}" {% if c==item.category %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
+
+                            <p class="les-mer display-field" onclick="toggleReadMore(event)">
+                                Vis detaljer ▼
+                            </p>
+
+                            <textarea class="plain-input description" style="display: none;"
+                                name="description_{{ item.id }}" rows="3"
+                                placeholder="Beskrivelse">{{ item.description or "" }}</textarea>
+
+                            <input class="plain-input display-price" type="text" name="price_{{ item.id }}"
+                                value="{{ item.price }} kr" placeholder="Pris (kr)">
+                        </div>
+
+                        <label class="checkbox-inline">
+                            <input type="checkbox" name="active_{{ item.id }}" style="width: fit-content;" {% if
+                                item.active %}checked{% endif %}>
+                            Tilgjengelig
+                        </label>
+
+                        <button type="button" class="btn-danger" onclick="markDelete('{{ item.id }}')">
+                            <svg class="icon">
+                                <use href="#icon-trash"></use>
+                            </svg>
+                            Slett
+                        </button>
+                    </div>
+                    {% endfor %}
+
+                    <div class="menu-item menu-add" style="cursor: pointer;" onclick="addMenuItem('{{ category }}')">
+                        <svg>
+                            <use href="#icon-plus"></use>
+                        </svg>
+                        <span>Legg til vare</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+        </section>
+        <button type="submit">Lagre endringer</button>
+    </form>
+
+    {% include "navigation/back_to_top.html" %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>

@@ -87,46 +87,342 @@ function editQuantity(itemId) {
     input.addEventListener("blur", commit);
 }
 
+// Require at least one item in the cart before submitting the form
+function validateOrder(event) {
+    const inputs = document.querySelectorAll('input[name^="item_"]');
+    const Meny = document.getElementById('Meny');
+    let totalSelected = 0;
+
+    inputs.forEach(input => {
+        const value = parseInt(input.value || "0", 10);
+        if (value > 0) totalSelected++;
+    });
+
+    if (totalSelected === 0 && Meny.style.display != 'none') {
+        event.preventDefault();
+        alert("Du må velge minst en vare før du sender inn bestillingen!");
+        return false;
+    }
+
+    return true;
+}
 
 // Show and hide description
 function toggleReadMore(event) {
-    const lesMerElement = event.target;
-    const descriptionElement = lesMerElement.nextElementSibling;
+    const triggerElement = event.currentTarget;
+    const descriptionElement = triggerElement.nextElementSibling;
 
-    if (descriptionElement.style.display === 'none') {
+    if (!descriptionElement) return;
+
+    if (descriptionElement.style.display === 'none' || descriptionElement.style.display === '') {
         descriptionElement.style.display = 'block';
-        lesMerElement.innerText = 'Les mindre ▲';
+        triggerElement.innerText = 'Skjul detaljer ▲';
     } else {
         descriptionElement.style.display = 'none';
-        lesMerElement.innerText = 'Les mer ▼';
+        triggerElement.innerText = 'Vis detaljer ▼';
     }
 }
+
+// Menu editor: mark item for deletion
+function markDelete(itemId) {
+    const item = document.getElementById(`menu_item_${itemId}`);
+    const hidden = document.querySelector(`input[name="delete_${itemId}"]`);
+    if (!item || !hidden) return;
+
+    const shouldDelete = hidden.value !== "1";
+    hidden.value = shouldDelete ? "1" : "0";
+    item.classList.toggle("committing-delete", shouldDelete);
+}
+
+// Menu editor: add new item to a category
+let newItemCounter = 0;
+function addMenuItem(category) {
+    newItemCounter += 1;
+    const idx = newItemCounter;
+    const container = document.querySelector(`.menu-category[data-category="${category}"]`);
+    if (!container) return;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "menu-item";
+    wrapper.id = `new_menu_item_${idx}`;
+
+    wrapper.innerHTML = `
+        <input type="hidden" name="new_item_index" value="${idx}">
+        <div class="menu-item-image">
+            <img id="image_preview_new_${idx}" src="" alt="Bilde" width="150" height="200"
+                onclick="triggerImageUpload('image_file_new_${idx}')">
+            <input class="image-input" type="file" name="new_image_file_${idx}" id="image_file_new_${idx}"
+                accept=".png,.jpg,.jpeg,.gif,.webp" onchange="previewImage(event, 'image_preview_new_${idx}')">
+            <input type="hidden" name="new_image_url_${idx}" value="">
+        </div>
+        <div class="information">
+            <input class="plain-input display-title" type="text" name="new_title_${idx}" placeholder="Tittel">
+            <select class="plain-input display-category" name="new_category_${idx}">
+                ${buildCategoryOptions(category)}
+            </select>
+            <p class="les-mer display-field" onclick="toggleReadMore(event)">Vis detaljer ▼</p>
+            <textarea class="plain-input description" style="display: none;" name="new_description_${idx}" rows="3" placeholder="Beskrivelse"></textarea>
+            <input class="plain-input display-price" type="text" name="new_price_${idx}" placeholder="Pris (kr)">
+        </div>
+        <label class="checkbox-inline">
+            <input type="checkbox" name="new_active_${idx}" style="width: fit-content;" checked>
+            Tilgjengelig
+        </label>
+        <button type="button" class="btn-danger" onclick="removeNewItem(${idx})">
+            <svg class="icon">
+                <use href="#icon-trash"></use>
+            </svg>
+            Slett
+        </button>
+    `;
+
+    container.insertBefore(wrapper, container.querySelector(".menu-add"));
+}
+
+function removeNewItem(idx) {
+    const item = document.getElementById(`new_menu_item_${idx}`);
+    if (item) item.remove();
+}
+
+function triggerImageUpload(inputId) {
+    const input = document.getElementById(inputId);
+    if (input) input.click();
+}
+
+function previewImage(event, imgId) {
+    const img = document.getElementById(imgId);
+    if (!img) return;
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (img.dataset.objectUrl) {
+        URL.revokeObjectURL(img.dataset.objectUrl);
+    }
+    const url = URL.createObjectURL(file);
+    img.src = url;
+    img.dataset.objectUrl = url;
+}
+
+function escapeHtml(value) {
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+}
+
+function getCategoryNames() {
+    return Array.from(document.querySelectorAll(".category-block")).map(b => b.dataset.category);
+}
+
+function buildCategoryOptions(selected) {
+    return getCategoryNames()
+        .map(name => {
+            const safe = escapeHtml(name);
+            const isSelected = name === selected ? " selected" : "";
+            return `<option value="${safe}"${isSelected}>${safe}</option>`;
+        })
+        .join("");
+}
+
+function updateCategorySelectOptions() {
+    const selects = document.querySelectorAll("select.display-category");
+    const names = getCategoryNames();
+    selects.forEach(select => {
+        const current = select.value;
+        select.innerHTML = names
+            .map(name => {
+                const safe = escapeHtml(name);
+                const isSelected = name === current ? " selected" : "";
+                return `<option value="${safe}"${isSelected}>${safe}</option>`;
+            })
+            .join("");
+        if (current && !names.includes(current)) {
+            const opt = document.createElement("option");
+            opt.value = current;
+            opt.textContent = current;
+            opt.selected = true;
+            select.prepend(opt);
+        }
+    });
+}
+
+function rebuildCategoryOrderInputs() {
+    const container = document.getElementById("categoryOrderInputs");
+    if (!container) return;
+    container.innerHTML = "";
+    getCategoryNames().forEach(name => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "category_order";
+        input.value = name;
+        container.appendChild(input);
+    });
+}
+
+function moveCategory(button, direction) {
+    const block = button.closest(".category-block");
+    if (!block) return;
+    const sibling = direction < 0 ? block.previousElementSibling : block.nextElementSibling;
+    if (!sibling || !sibling.classList.contains("category-block")) return;
+    if (direction < 0) {
+        block.parentNode.insertBefore(block, sibling);
+    } else {
+        block.parentNode.insertBefore(sibling, block);
+    }
+    rebuildCategoryOrderInputs();
+}
+
+function addCategory() {
+    const input = document.getElementById("newCategoryName");
+    if (!input) return;
+    const name = input.value.trim();
+    if (!name) return;
+
+    const existing = getCategoryNames();
+    if (existing.includes(name)) {
+        input.value = "";
+        return;
+    }
+
+    const block = document.createElement("div");
+    block.className = "category-block";
+    block.dataset.category = name;
+
+    const header = document.createElement("div");
+    header.className = "category-header";
+
+    const title = document.createElement("h2");
+    title.textContent = name;
+
+    const actions = document.createElement("div");
+    actions.className = "category-actions";
+
+    const btnUp = document.createElement("button");
+    btnUp.type = "button";
+    btnUp.className = "btn-secondary";
+    btnUp.textContent = "Opp";
+    btnUp.addEventListener("click", () => moveCategory(btnUp, -1));
+
+    const btnDown = document.createElement("button");
+    btnDown.type = "button";
+    btnDown.className = "btn-secondary";
+    btnDown.textContent = "Ned";
+    btnDown.addEventListener("click", () => moveCategory(btnDown, 1));
+
+    actions.appendChild(btnUp);
+    actions.appendChild(btnDown);
+
+    header.appendChild(title);
+    header.appendChild(actions);
+
+    const menuCategory = document.createElement("div");
+    menuCategory.className = "menu-category";
+    menuCategory.dataset.category = name;
+
+    const menuAdd = document.createElement("div");
+    menuAdd.className = "menu-item menu-add";
+    menuAdd.style.cursor = "pointer";
+    menuAdd.innerHTML = `
+        <svg>
+            <use href="#icon-plus"></use>
+        </svg>
+        <span>Legg til vare</span>
+    `;
+    menuAdd.addEventListener("click", () => addMenuItem(name));
+
+    menuCategory.appendChild(menuAdd);
+
+    const hidden = document.createElement("input");
+    hidden.type = "hidden";
+    hidden.name = "new_category";
+    hidden.value = name;
+
+    block.appendChild(header);
+    block.appendChild(menuCategory);
+    block.appendChild(hidden);
+
+    const menuSection = document.getElementById("Meny");
+    menuSection.appendChild(block);
+
+    input.value = "";
+    updateCategorySelectOptions();
+    rebuildCategoryOrderInputs();
+}
+
+
 
 // Submenu function
 function toggleSubMenu() {
     const submenu = document.querySelector('.submenu');
     const iconUse = document.getElementById('plusMinusIcon');
+    const iconSVG = document.getElementById('plusMinusSVG');
 
     submenu.classList.toggle('open');
 
     if (submenu.classList.contains('open')) {
+        iconSVG.style.transform = 'rotate(180deg)';
+        iconSVG.style.transition = 'transform 0.5s ease';
         iconUse.setAttribute('href', '#icon-minus');
     } else {
+        iconSVG.style.transform = 'rotate(0deg)';
+        iconSVG.style.transition = 'transform 0.5s ease';
         iconUse.setAttribute('href', '#icon-plus');
     }
 }
 
+
+
+// Handle action
+async function handleAction(event, targetId, actionType) {
+    event.preventDefault();
+    const form = event.target;
+    const card = document.getElementById(targetId);
+
+    card.classList.add('committing-' + actionType);
+
+    try {
+        const response = await fetch(form.action, { method: 'POST' });
+
+        if (response.ok) {
+            if (actionType === 'delete') {
+                card.classList.add('deleted-animation');
+                setTimeout(() => card.remove(), 600);
+            } else {
+                card.classList.add('success-animation');
+                setTimeout(() => window.location.reload(), 500);
+            }
+        } else {
+            card.classList.remove('committing-' + actionType);
+            alert("Action failed.");
+        }
+    } catch (error) {
+        card.classList.remove('committing-' + actionType);
+        console.error("Error:", error);
+    }
+}
+
+
+
 // Dark mode
 document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("themeToggle");
-    const icon = document.getElementById("themeIcon");
+    const iconUse = document.getElementById("themeIconUse");
+    const iconSVG = document.getElementById("themeIconSVG");
 
-    if (!btn || !icon) return;
+    const form = document.getElementById("menyEditorForm");
+    if (form) {
+        rebuildCategoryOrderInputs();
+        updateCategorySelectOptions();
+        form.addEventListener("submit", rebuildCategoryOrderInputs);
+    }
+
+    if (!btn || !iconUse) return;
 
     const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
         document.body.classList.add("dark");
-        icon.setAttribute("href", "#icon-sun");
+        iconUse.setAttribute("href", "#icon-sun");
     }
 
     btn.addEventListener("click", () => {
@@ -134,8 +430,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         localStorage.setItem("theme", isDark ? "dark" : "light");
 
-        icon.setAttribute("href", isDark ? "#icon-sun" : "#icon-moon");
+        if (isDark) {
+            iconSVG.style.transform = "rotate(180deg)";
+            iconSVG.style.transition = "transform 0.7s ease";
+            iconUse.setAttribute("href", "#icon-sun");
+        } else {
+            iconSVG.style.transform = "rotate(0deg)";
+            iconSVG.style.transition = "transform 0.7s ease";
+            iconUse.setAttribute("href", "#icon-moon");
+        }
     });
+
 });
 
 // Back to top
@@ -152,3 +457,14 @@ window.addEventListener("scroll", () => {
 if (backToTop) {
     backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
+
+// Back to bottom
+window.addEventListener('beforeunload', () => {
+    sessionStorage.setItem('scrollPos', window.scrollY);
+});
+
+window.addEventListener('load', () => {
+    const scrollPos = sessionStorage.getItem('scrollPos');
+    if (scrollPos) window.scrollTo(0, parseInt(scrollPos));
+    sessionStorage.removeItem('scrollPos');
+});

@@ -10,92 +10,142 @@
 <body>
     {% include "navigation/_navbar.html" %}
 
-    <table border="1" cellpadding="8">
-        <tr>
-            {% if role == 'personlig' %}
-            <th>Ordre-ID</th>
-            <th>Ordredato og -tid</th>
-            <th>Hentedato og -tid</th>
-            <th>Status</th>
-            <th>Sum</th>
-            <th>Detaljer</th>
-
-            {% elif role == 'kjokken' or role == 'okonomi' or role == 'admin' %}
-            <th>Ordre-ID</th>
-            <th>Kunder</th>
-            <th>Ordredato og -tid</th>
-            <th>Hentedato og -tid</th>
-            <th>Sum</th>
-            {% if role == 'admin' %}
-            <th>Levert</th>
-            <th>Fakturert</th>
+    <div class="centered-page" style="width: fit-content;">
+        <h1>
+            {% if role == 'personlig' %} Mine Bestillinger
+            {% elif role == 'kjokken' %} Aktive Bestillinger
+            {% elif role == 'okonomi' %} Ferdige Bestillinger
+            {% elif role == 'admin' %} Alle Bestillinger
             {% endif %}
-            <th>Handling</th>
+        </h1>
 
-            {% endif %}
-        </tr>
+        <div class="menu-category" style="display: grid; grid-template-columns: repeat(3, 1fr);">
 
-        {% for o in order_info %}
-        <tr>
-            {% if role == 'personlig' %}
-            <td>{{ o.id }}</td>
-            <td>{{ o.ordre_dato | format_date }} | {{ o.ordre_tid | format_time }}</td>
-            <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid | format_time }}</td>
-            <td>{{ 'Levert' if o.status_levert else 'Behandling' }}</td>
-            <td>{{ o.sum | int }} kr</td>
-            <td><a href="/vis-bestilling/{{ o.id }}">Se kvittering</a></td>
+            {% if order_info %}
+            {% for o in order_info %}
+            <div id="order-card-{{ o.id }}" class="menu-item receipt-card">
 
-            {% elif role == 'kjokken' or role == 'okonomi' or role == 'admin' %}
-            <td>{{ o.id }}</td>
-            <td>
-                {{ o.navn }}
-                <p class="les-mer" onclick="toggleReadMore(event)"> Les mer ▼</p>
-                <div class="description" style="display: none;">
-                    <p><strong>Kundens-ID:</strong> {{ o.kunde_id }}</p>
-                    <p><strong>E-post:</strong> {{ o.epost }}</p>
-                    <p><strong>Mobil:</strong> {{ o.mobil }}</p>
-                    <p><strong>Organisasjonsnummer:</strong> {{ o.organisasjonsnummer }}</p>
-                    <p><strong>Fakturaadresse:</strong> {{ o.fakturaadresse }}</p>
-                    <p><strong>Ressursnummer:</strong> {{ o.ressursnummer }}</p>
-                    <p><strong>Koststed:</strong> {{ o.koststed }}</p>
+                <div class="receipt-header">
+                    <h3>#{{ o.id }}</h3>
+                    {% if o.menu_source %}
+                    <p><strong>{{ o.menu_source }}</strong></p>
+                    {% endif %}
+                    <div class="receipt-date">
+                        {{ o.ordre_dato | format_date }}<br>
+                        {{ o.ordre_tid | format_time }}
+                    </div>
                 </div>
-            </td>
-            <td>{{ o.ordre_dato | format_date }} | {{ o.ordre_tid | format_time }}</td>
-            <td>{{ o.hent_dato | format_date }} | {{ o.hent_tid | format_time }}</td>
-            <td>{{ o.sum | int }} kr</td>
+
+                <div class="receipt-body">
+
+                    {% if role != 'personlig' %}
+                    <p><strong>Kunde:</strong> {{ o.navn }}</p>
+                    {% endif %}
+                    {% if o.spise_i_kantina != 'Nei' and o.menu_source == 'Kantina' %}
+                    <p><strong>Kommer:</strong> {{ o.hent_dato | format_date }} | kl. {{ o.hent_tid | format_time }}</p>
+                    <p>{{ o.spise_i_kantina }} skal spise i kantina</p>
+                    {% else %}
+                    <p><strong>Hentes:</strong> {{ o.hent_dato | format_date }} | kl. {{ o.hent_tid | format_time }}</p>
+                    <p><strong>Sum:</strong> {{ o.sum | int }} kr</p>
+                    {% endif %}
+
+                    {% if role == 'personlig' %}
+                    <div style="margin-top: 10px;">
+                        {% if o.status_levert %}
+                        <span class="receipt-status-badge status-success">Levert</span>
+                        {% else %}
+                        <span class="receipt-status-badge status-pending">Behandling</span>
+                        {% endif %}
+                    </div>
+
+                    {% else %}
+                    <p class="les-mer" onclick="toggleReadMore(event)" style="margin-top:0.5rem;">Vis detaljer ▼</p>
+                    <div class="description receipt-details-list" style="display: none; font-size: 0.9rem;">
+                        <p><strong>Kunde-ID:</strong> {{ o.kunde_id }}</p>
+                        <p><strong>Mobil:</strong> {{ o.mobil }}</p>
+                        <p><strong>E-post:</strong> <a href="mailto:{{ o.epost }}">{{ o.epost }}</a></p>
+                        {% if o.organisasjonsnummer or o.koststed or o.ressursnummer or o.fakturaadresse or o.melding %}
+                        <hr style="border: 0; border-top: 1px solid #ccc; margin: 5px 0;">
+                        {% endif %}
+                        {% if o.organisasjonsnummer %}
+                        <p><strong>Org.nr:</strong> {{ o.organisasjonsnummer }}</p>
+                        {% endif %}
+                        {% if o.ressursnummer %}
+                        <p><strong>Ressursnr:</strong> {{ o.ressursnummer }}</p>
+                        {% endif %}
+                        {% if o.fakturaadresse %}
+                        <p><strong>Koststed:</strong> {{ o.fakturaadresse }}</p>
+                        {% endif %}
+                        {% if o.koststed %}
+                        <p><strong>Koststed:</strong> {{ o.koststed }}</p>
+                        {% endif %}
+                        {% if o.melding %}
+                        <p><strong>Melding:</strong> {{ o.melding }}</p>
+                        {% endif %}
+                    </div>
+
+                    <div style="margin-top: 10px; display: flex; gap: 5px; flex-direction: column;">
+                        {% if o.status_levert %}
+                        <span class="receipt-status-badge status-success">Levert</span>
+                        {% else %}
+                        <span class="receipt-status-badge status-pending">Venter kjøkken</span>
+                        {% endif %}
+
+                        {% if role == 'admin' or role == 'okonomi' %}
+                        {% if o.status_fakturert %}
+                        <span class="receipt-status-badge status-info">Fakturert</span>
+                        {% else %}
+                        <span class="receipt-status-badge status-pending">Ikke fakturert</span>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <div class="receipt-actions">
+                    <a href="/vis-bestilling/{{ o.id }}">
+                        <button class="btn-secondary">
+                            <svg class="icon">
+                                <use href="#icon-clipboard"></use>
+                            </svg>
+                            Se kvittering
+                        </button>
+                    </a>
+
+                    {% if role == 'kjokken' and not o.status_levert %}
+                    <form method="POST" action="/sett-levert/{{ o.id }}"
+                        onsubmit="handleAction(event, 'order-card-{{ o.id }}', 'lever')">
+                        <button type="submit">✓ Sett som levert</button>
+                    </form>
+                    {% endif %}
+
+                    {% if role == 'okonomi' and not o.status_fakturert %}
+                    <form method="POST" action="/sett-fakturert/{{ o.id }}"
+                        onsubmit="handleAction(event, 'order-card-{{ o.id }}', 'fakturer')">
+                        <button type="submit">✓ Merk fakturert</button>
+                    </form>
+                    {% endif %}
+
+                    {% if role == 'admin' %}
+                    <form method="POST" action="/slett-bestilling/{{ o.id }}"
+                        onsubmit="handleAction(event, 'order-card-{{ o.id }}', 'delete')">
+                        <button type="submit" class="btn-danger" onclick="return confirm('Delete?')">
+                            <svg class="icon">
+                                <use href="#icon-trash"></use>
+                            </svg>
+                            Slett
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="width: 100%; grid-column: 2;">Ingen bestillinger funnet.</p>
             {% endif %}
-
-            {% if role == 'kjokken' %}
-            <td>
-                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
-                <form method="POST" action="/sett-levert/{{ o.id }}" class="inline-form">
-                    <button type="submit">✔️ Sett som levert</button>
-                </form>
-            </td>
-
-            {% elif role == 'okonomi' %}
-            <td>
-                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
-                <form method="POST" action="/sett-fakturert/{{ o.id }}" class="inline-form">
-                    <button type="submit">📦 Merk som fakturert</button>
-                </form>
-            </td>
-
-            {% elif role == 'admin' %}
-            <td>{{ '✔️' if o.status_levert else '❌' }}</td>
-            <td>{{ '✔️' if o.status_fakturert else '❌' }}</td>
-            <td>
-                <a href="/vis-bestilling/{{ o.id }}" style="padding-right: 20px;">Vis</a>
-                <form method="POST" action="/slett-bestilling/{{ o.id }}" class="inline-form">
-                    <button type="submit" onclick="return confirm('Er du sikker på at du vil slette bestillingen?');">
-                        🗑️ Slett
-                    </button>
-                </form>
-            </td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-    </table>
+        </div>
+    </div>
 
     {% include "navigation/back_to_top.html" %}
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

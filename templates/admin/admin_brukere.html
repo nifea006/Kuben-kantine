@@ -38,9 +38,19 @@
                         Admin</label>
                 </td>
                 <td>
-                    <button type="submit" name="action" value="save">💾 Lagre</button>
+                    <button type="submit" name="action" value="save">
+                        <svg class="icon">
+                            <use href="#icon-save"></use>
+                        </svg>
+                        Lagre
+                    </button>
                     <button type="submit" name="action" value="delete"
-                        onclick="return confirm('Er du sikker på at du vil slette brukeren?');">🗑️ Slett</button>
+                        onclick="return confirm('Er du sikker på at du vil slette brukeren?');">
+                        <svg class="icon">
+                            <use href="#icon-trash"></use>
+                        </svg>
+                        Slett
+                    </button>
                 </td>
             </form>
         </tr>
