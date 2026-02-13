@@ -45,10 +45,13 @@
             {% elif session.get('active_role') == 'kjokken' %}
             <li class="nav-dropdown">
                 <button class="nav-dropdown-toggle" type="button" data-dropdown-toggle aria-expanded="false">
-                    <svg class="icon dropdown-toggle-icon">
-                        <use href="#icon-plus"></use>
+                    <svg class="icon">
+                        <use href="#icon-edit"></use>
                     </svg>
                     Rediger meny
+                    <svg class="icon dropdown-toggle-icon-arrow">
+                        <use href="#icon-arrow-up"></use>
+                    </svg>
                 </button>
                 <div class="nav-dropdown-menu">
                     <a class="span-icon-holder {{ 'active' if request.endpoint == 'meny_editor' 

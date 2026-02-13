@@ -1,7 +1,7 @@
 # Kuben Cafeteria – Teacher Page
 
-This project is a practice assignment from Kuben VGS, where the task was to create a new webpage
-for the school cafeteria, specifically designed for teachers.
+This project is a practice assignment from Kuben VGS. The goal is to build a cafeteria web app
+for teachers with ordering, kitchen/admin views, and menu editing.
 
 ---
 
@@ -34,19 +34,11 @@ If you don’t have the `requirements.txt`, install manually:
 To run the webpage, you must use a MySQL-based database (such as MariaDB).
 
 1. Create a new database in MariaDB/MySQL.  
-2. Fill out your database connection settings inside **app.py**:
+2. Create a `.env` file in the project root with your settings:
 
-Find this inside [`app.py`](/app.py):
+3. The app will auto-create required tables on startup.
 
-    def get_connection_kantine():
-    return mysql.connector.connect(
-        host=DB_HOST or "localhost",
-        user=DB_USER or "your_user_name",
-        password=DB_PASSWORD or "your_password",
-        database=DB_KANTINE or "your_database_name"
-    )
-
-Make sure these match your local database configuration.
+If you prefer, you can also set the values directly in `app.py` in `get_connection_kantine()`.
 
 ---
 
@@ -59,3 +51,17 @@ After installing dependencies and configuring the database, you can start the se
 Then open your browser and visit:
 
     http://127.0.0.1:5000/
+
+---
+
+## Notes / Tips
+
+- On first run, the app creates missing tables automatically.
+- If uploads don’t show, ensure `static/uploads/` exists and is writable.
+- To get admin access, set `rolle_admin` to `1` for your user in the `users` table (e.g. via a SQL update):
+
+```sql
+UPDATE users
+SET rolle_admin = 1
+WHERE epost = 'your@email.com';
+```
