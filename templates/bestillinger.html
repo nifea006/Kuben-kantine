@@ -11,7 +11,7 @@
 <body>
     {% include "navigation/_navbar.html" %}
 
-    <div class="centered-page" style="width: fit-content;">
+    <div class="centered-page is-wide">
         <h1>
             {% if role == 'personlig' %} Mine Bestillinger
             {% elif role == 'kjokken' %} Aktive Bestillinger
@@ -30,7 +30,7 @@
         </div>
         {% endif %}
 
-        <div class="menu-category" style="display: grid; grid-template-columns: repeat(3, 1fr);">
+        <div class="menu-category orders-grid">
 
             {% if order_info %}
             {% for o in order_info %}

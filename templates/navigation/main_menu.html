@@ -11,41 +11,41 @@
 <body>
     {% include "navigation/_navbar.html" %}
 
-    <div class="centered-page" style="width: 800px;">
+    <div class="centered-page is-tight">
         <h1>Velkommen til Kuben Kantine</h1>
         <h2>Velg hva du vil gjøre</h2>
         <ul class="main-menu-ul">
             {% if role == 'personlig' %}
-            <li class="main-menu-li">
-                <button id="toggleNewOrder" onclick="toggleSubMenu()">
+            <li class="main-menu-li menu-dropdown">
+                <button class="menu-dropdown-toggle" type="button" data-menu-toggle>
                     <div></div>
-                    <svg class="icon" id="plusMinusSVG">
-                        <use id="plusMinusIcon" href="#icon-plus"></use>
+                    <svg class="icon dropdown-toggle-icon">
+                        <use href="#icon-plus"></use>
                     </svg>
                     Lag ny bestilling
                 </button>
-            </li>
 
-            <ul class="submenu">
-                <li>
-                    <a href="/bestille-fra-kantina">
-                        <button class="span-icon-holder">
-                            <span class="icon"></span>
-                            Bestill fra kantina
-                        </button>
-                    </a>
-                </li>
-                <li>
-                    <a href="/bestille-fra-WAKEUP">
-                        <button>
-                            <svg class="icon">
-                                <use href="#icon-store"></use>
-                            </svg>
-                            Bestill fra WAKEUP
-                        </button>
-                    </a>
-                </li>
-            </ul>
+                <ul class="submenu">
+                    <li>
+                        <a href="/bestille-fra-kantina">
+                            <button class="span-icon-holder">
+                                <span class="icon"></span>
+                                Bestill fra kantina
+                            </button>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/bestille-fra-WAKEUP">
+                            <button>
+                                <svg class="icon">
+                                    <use href="#icon-store"></use>
+                                </svg>
+                                Bestill fra WAKEUP
+                            </button>
+                        </a>
+                    </li>
+                </ul>
+            </li>
 
             <li class="main-menu-li">
                 <a href="/mine-bestillinger">
@@ -60,35 +60,36 @@
             </li>
 
             {% elif role == 'kjokken' %}
-            <li class="main-menu-li">
-                <button id="toggleNewOrder" onclick="toggleSubMenu()">
+            <li class="main-menu-li menu-dropdown">
+                <button class="menu-dropdown-toggle" type="button" data-menu-toggle>
                     <div></div>
-                    <svg class="icon">
-                        <use href="#icon-edit"></use>
-                    </svg> Rediger meny
+                    <svg class="icon dropdown-toggle-icon">
+                        <use href="#icon-plus"></use>
+                    </svg>
+                    Rediger meny
                 </button>
-            </li>
 
-            <ul class="submenu">
-                <li>
-                    <a href="/meny-editor/Kantina">
-                        <button class="span-icon-holder">
-                            <span class="icon"></span>
-                            Rediger kantina meny
-                        </button>
-                    </a>
-                </li>
-                <li>
-                    <a href="/meny-editor/WAKEUP">
-                        <button>
-                            <svg class="icon">
-                                <use href="#icon-store"></use>
-                            </svg>
-                            Rediger WAKEUP meny
-                        </button>
-                    </a>
-                </li>
-            </ul>
+                <ul class="submenu">
+                    <li>
+                        <a href="/meny-editor/Kantina">
+                            <button class="span-icon-holder">
+                                <span class="icon"></span>
+                                Rediger kantina meny
+                            </button>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/meny-editor/WAKEUP">
+                            <button>
+                                <svg class="icon">
+                                    <use href="#icon-store"></use>
+                                </svg>
+                                Rediger WAKEUP meny
+                            </button>
+                        </a>
+                    </li>
+                </ul>
+            </li>
 
             <li class="main-menu-li">
                 <a href="/aktive-bestillinger-i-kantinen">

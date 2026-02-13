@@ -435,21 +435,22 @@ function deleteCategory(button) {
 
 
 // Submenu function
-function toggleSubMenu() {
-    const submenu = document.querySelector('.submenu');
-    const iconUse = document.getElementById('plusMinusIcon');
-    const iconSVG = document.getElementById('plusMinusSVG');
+function updateDropdownIcon(container, isOpen) {
+    if (!container) return;
+    const useEl = container.querySelector(".dropdown-toggle-icon use");
+    if (!useEl) return;
+    useEl.setAttribute("href", isOpen ? "#icon-minus" : "#icon-plus");
+}
 
-    submenu.classList.toggle('open');
-
-    if (submenu.classList.contains('open')) {
-        iconSVG.style.transform = 'rotate(180deg)';
-        iconSVG.style.transition = 'transform 0.5s ease';
-        iconUse.setAttribute('href', '#icon-minus');
-    } else {
-        iconSVG.style.transform = 'rotate(0deg)';
-        iconSVG.style.transition = 'transform 0.5s ease';
-        iconUse.setAttribute('href', '#icon-plus');
+function toggleSubMenu(event) {
+    const button = event?.currentTarget;
+    const container = button ? button.closest(".menu-dropdown") : null;
+    const submenu = container ? container.querySelector(".submenu") : document.querySelector(".submenu");
+    if (!submenu) return;
+    const isOpen = submenu.classList.toggle("open");
+    if (container) {
+        container.classList.toggle("open", isOpen);
+        updateDropdownIcon(container, isOpen);
     }
 }
 
@@ -491,12 +492,77 @@ document.addEventListener("DOMContentLoaded", () => {
     const btn = document.getElementById("themeToggle");
     const iconUse = document.getElementById("themeIconUse");
     const iconSVG = document.getElementById("themeIconSVG");
+    const navToggle = document.querySelector(".nav-toggle");
+    const navDrawer = document.getElementById("navDrawer");
+    const navCloseTargets = document.querySelectorAll("[data-nav-close]");
 
     const form = document.getElementById("menyEditorForm");
     if (form) {
         rebuildCategoryOrderInputs();
         updateCategorySelectOptions();
         form.addEventListener("submit", rebuildCategoryOrderInputs);
+    }
+
+    if (navToggle && navDrawer) {
+        const closeDrawer = () => {
+            navDrawer.classList.remove("open");
+            navToggle.setAttribute("aria-expanded", "false");
+            document.body.classList.remove("nav-locked");
+        };
+
+        navToggle.addEventListener("click", () => {
+            const isOpen = navDrawer.classList.toggle("open");
+            navToggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+            document.body.classList.toggle("nav-locked", isOpen);
+        });
+
+        navCloseTargets.forEach(btn => btn.addEventListener("click", closeDrawer));
+        navDrawer.querySelectorAll("a").forEach(link => link.addEventListener("click", closeDrawer));
+    }
+
+    document.querySelectorAll("[data-menu-toggle]").forEach(button => {
+        button.addEventListener("click", toggleSubMenu);
+    });
+
+    const dropdownToggles = document.querySelectorAll("[data-dropdown-toggle]");
+    if (dropdownToggles.length) {
+        const closeDropdowns = () => {
+            document.querySelectorAll(".nav-dropdown.open").forEach(dropdown => {
+                dropdown.classList.remove("open");
+                const toggle = dropdown.querySelector("[data-dropdown-toggle]");
+                if (toggle) toggle.setAttribute("aria-expanded", "false");
+                updateDropdownIcon(dropdown, false);
+            });
+        };
+
+        dropdownToggles.forEach(toggle => {
+            toggle.addEventListener("click", event => {
+                event.stopPropagation();
+                const dropdown = toggle.closest(".nav-dropdown");
+                if (!dropdown) return;
+                const isOpen = dropdown.classList.toggle("open");
+                toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+                updateDropdownIcon(dropdown, isOpen);
+                document.querySelectorAll(".nav-dropdown").forEach(other => {
+                    if (other !== dropdown) {
+                        other.classList.remove("open");
+                        const otherToggle = other.querySelector("[data-dropdown-toggle]");
+                        if (otherToggle) otherToggle.setAttribute("aria-expanded", "false");
+                        updateDropdownIcon(other, false);
+                    }
+                });
+            });
+        });
+
+        document.addEventListener("click", event => {
+            if (!event.target.closest(".nav-dropdown")) {
+                closeDropdowns();
+            }
+        });
+
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") closeDropdowns();
+        });
     }
 
     if (!btn || !iconUse) return;
@@ -528,15 +594,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // Back to top
 const backToTop = document.getElementById("backToTop");
 
-window.addEventListener("scroll", () => {
-    if (window.scrollY > 150) {
-        backToTop.style.display = 'block';
-    } else {
-        backToTop.style.display = 'none';
-    }
-});
+function updateBackToTopVisibility() {
+    if (!backToTop) return;
+    backToTop.style.display = window.scrollY > 150 ? "block" : "none";
+}
 
 if (backToTop) {
+    window.addEventListener("scroll", updateBackToTopVisibility, { passive: true });
     backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
 
@@ -547,6 +611,7 @@ window.addEventListener('beforeunload', () => {
 
 window.addEventListener('load', () => {
     const scrollPos = sessionStorage.getItem('scrollPos');
-    if (scrollPos) window.scrollTo(0, parseInt(scrollPos));
+    if (scrollPos) window.scrollTo(0, parseInt(scrollPos, 10));
     sessionStorage.removeItem('scrollPos');
+    updateBackToTopVisibility();
 });
