@@ -1,9 +1,7 @@
-# Ignore Python cache
 __pycache__/
 *.pyc
 
-# Ignore environment and private info
 .env
+.venv/
 
-# Ignore local database or secret configs
 instance/

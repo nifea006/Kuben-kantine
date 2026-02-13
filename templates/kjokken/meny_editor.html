@@ -86,15 +86,15 @@
                         <div class="information">
                             <input class="plain-input display-title" type="text" name="title_{{ item.id }}"
                                 value="{{ item.title }}" placeholder="Tittel">
-                        <select class="plain-input display-category" name="category_{{ item.id }}"
-                            data-selected="{{ item.category or '' }}">
-                            {% if item.category and item.category not in category_list %}
-                            <option value="{{ item.category }}">{{ item.category }}</option>
-                            {% endif %}
-                            {% for c in category_list %}
-                            <option value="{{ c }}" {% if c==item.category %}selected{% endif %}>{{ c }}</option>
-                            {% endfor %}
-                        </select>
+                            <select class="plain-input display-category" name="category_{{ item.id }}"
+                                data-selected="{{ item.category or '' }}">
+                                {% if item.category and item.category not in category_list %}
+                                <option value="{{ item.category }}">{{ item.category }}</option>
+                                {% endif %}
+                                {% for c in category_list %}
+                                <option value="{{ c }}" {% if c==item.category %}selected{% endif %}>{{ c }}</option>
+                                {% endfor %}
+                            </select>
 
                             <p class="les-mer display-field" onclick="toggleReadMore(event)">
                                 Vis detaljer ▼

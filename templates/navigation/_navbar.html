@@ -2,18 +2,18 @@
     <ul>
         <!-- Personlig navbar -->
         {% if session.get('active_role') == 'personlig' %}
-        <li><a class="{{ 'active' if request.endpoint == 'bestille_fra_kantina' else '' }} span-icon-holder"
+        <li><a class="{{ 'active' if request.endpoint == 'bestille_fra_kantina' else 'hidden' }} span-icon-holder"
                 href="{{ url_for('bestille_fra_kantina') }}">
                 <span class="navbar-icon icon"></span> Bestille fra kantina
             </a></li>
-        <li><a class="{{ 'active' if request.endpoint == 'bestille_fra_WAKEUP' else '' }}"
+        <li><a class="{{ 'active' if request.endpoint == 'bestille_fra_WAKEUP' else 'hidden' }}"
                 href="{{ url_for('bestille_fra_WAKEUP') }}">
                 <svg class="icon">
                     <use href="#icon-store"></use>
                 </svg> Bestille fra WAKEUP
             </a></li>
-        <li><a class="{{ 'active' if request.endpoint == 'mine_bestillinger' else '' }}"
-                href="{{ url_for('mine_bestillinger') }}">
+        <li><a class="{{ 'active' if request.endpoint == 'mine_bestillinger'
+                         or request.endpoint == 'vis_bestilling' else '' }}" href="{{ url_for('mine_bestillinger') }}">
                 <svg class="icon">
                     <use href="#icon-clipboard"></use>
                 </svg> Mine bestillinger
@@ -21,19 +21,20 @@
 
         <!-- Kjøkken navbar -->
         {% elif session.get('active_role') == 'kjokken' %}
-        <li><a class="{{ 'active' if request.endpoint == 'aktive_bestillinger_i_kantinen' else '' }}"
+        <li><a class="{{ 'active' if request.endpoint == 'aktive_bestillinger_i_kantinen'
+                         or request.endpoint == 'vis_bestilling' else '' }}"
                 href="{{ url_for('aktive_bestillinger_i_kantinen') }}">
                 <svg class="icon">
                     <use href="#icon-chef-hat"></use>
                 </svg> Aktive bestillinger
             </a></li>
         <li><a class="{{ 'active' if request.endpoint == 'meny_editor' 
-                         and request.view_args.get('menu_source') == 'Kantina' else '' }} span-icon-holder"
+                         and request.view_args.get('menu_source') == 'Kantina' else 'hidden' }} span-icon-holder"
                 href="{{ url_for('meny_editor', menu_source='Kantina') }}">
                 <span class="navbar-icon icon"></span> Rediger kantina meny
             </a></li>
         <li><a class="{{ 'active' if request.endpoint == 'meny_editor' 
-                         and request.view_args.get('menu_source') == 'WAKEUP' else '' }}"
+                         and request.view_args.get('menu_source') == 'WAKEUP' else 'hidden' }}"
                 href="{{ url_for('meny_editor', menu_source='WAKEUP') }}">
                 <svg class="icon">
                     <use href="#icon-store"></use>
@@ -43,7 +44,8 @@
         <!-- Økonomi navbar -->
         {% elif session.get('active_role') == 'okonomi' %}
         <li>
-            <a class="{{ 'active' if request.endpoint == 'ferdige_bestillinger' else '' }}"
+            <a class="{{ 'active' if request.endpoint == 'ferdige_bestillinger'
+                         or request.endpoint == 'vis_bestilling' else '' }}"
                 href="{{ url_for('ferdige_bestillinger') }}">
                 <svg class="icon">
                     <use href="#icon-order"></use>
@@ -62,7 +64,8 @@
             </a>
         </li>
         <li>
-            <a class="{{ 'active' if request.endpoint == 'admin_bestillinger' else '' }}"
+            <a class="{{ 'active' if request.endpoint == 'admin_bestillinger'
+                         or request.endpoint == 'vis_bestilling' else '' }}"
                 href="{{ url_for('admin_bestillinger') }}">
                 <svg class="icon">
                     <use href="#icon-order"></use>

@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kuben Kantine - Hovedmeny</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
@@ -60,12 +61,12 @@
 
             {% elif role == 'kjokken' %}
             <li class="main-menu-li">
-                    <button id="toggleNewOrder" onclick="toggleSubMenu()">
-                        <div></div>
-                        <svg class="icon">
-                            <use href="#icon-edit"></use>
-                        </svg> Rediger meny
-                    </button>
+                <button id="toggleNewOrder" onclick="toggleSubMenu()">
+                    <div></div>
+                    <svg class="icon">
+                        <use href="#icon-edit"></use>
+                    </svg> Rediger meny
+                </button>
             </li>
 
             <ul class="submenu">

@@ -777,6 +777,7 @@ def submit():
 
 
         # Dining preference
+        spise_i_kantina = "Nei"
         spise_i_kantina_true = 'spise_i_kantina' in request.form
         antall_personer = request.form.get('antall_personer', '').strip()
         if antall_personer.isdigit():
@@ -788,8 +789,6 @@ def submit():
                 spise_i_kantina = f"{antall_personer} person" if spise_i_kantina_true else "Nei"
         else:
             antall_personer = 0
-        if spise_i_kantina == None:
-            spise_i_kantina = "Nei"
 
         # Save order
         try:
