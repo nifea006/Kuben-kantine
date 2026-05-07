@@ -15,17 +15,23 @@ It is recommended (but optional) to use a virtual environment so you don’t clu
 
 Example:
 
-    python -m venv venv
-    source venv/bin/activate        # macOS/Linux
-    venv\Scripts\activate           # Windows
+```bash
+python -m venv venv
+source venv/bin/activate        # macOS/Linux
+venv\Scripts\activate           # Windows
+```
 
 Then install the dependencies:
 
-    pip install -r requirements.txt
+```bash
+pip install -r requirements.txt
+```
 
 If you don’t have the `requirements.txt`, install manually:
 
-    pip install flask mysql-connector-python python-dotenv requests
+```bash
+pip install flask mysql-connector-python python-dotenv requests
+```
 
 ---
 
@@ -38,7 +44,7 @@ To run the webpage, you must use a MySQL-based database (such as MariaDB).
 
 3. The app will auto-create required tables on startup.
 
-If you prefer, you can also set the values directly in `app.py` in `get_connection_kantine()`.
+If you prefer, you can also set the values directly in `app.py` in [`get_connection_kantine()`](./app.py#L68).
 
 ---
 
@@ -46,11 +52,13 @@ If you prefer, you can also set the values directly in `app.py` in `get_connecti
 
 After installing dependencies and configuring the database, you can start the server with:
 
-    python app.py
+```bash
+python app.py
+```
 
 Then open your browser and visit:
 
-    http://127.0.0.1:5000/
+[`http://127.0.0.1:5000/`](/http://127.0.0.1:5000/)
 
 ---
 

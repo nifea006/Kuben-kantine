@@ -2,7 +2,7 @@ import json
 import hashlib
 import glob
 from flask import Flask, render_template, request, redirect, url_for, session, g
-from datetime import datetime
+from datetime import datetime, date
 import mysql.connector
 from mysql.connector import Error
 import requests
@@ -61,7 +61,7 @@ DB_HOST = os.getenv("DB_HOST")
 DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_KANTINE = os.getenv("DB_KANTINE")
-SECRET_KEY = os.getenv("SECRET_KEY") or "supersecretkey"
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 app.secret_key = SECRET_KEY
 
@@ -200,6 +200,8 @@ def home():
 # User login and role assignment
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if "user" in session:
+        session.clear()
     if request.method == "POST":
         epost = request.form.get("email").strip().lower()
         navn = request.form.get("navn").strip()
@@ -262,6 +264,8 @@ def velg_rolle():
 # Display main menu based on active role
 @app.route("/main")
 def main_menu():
+    if "user" not in session:
+        return redirect(url_for("login"))
     role = session.get("active_role")
     if not role:
         return redirect(url_for("login"))
@@ -704,10 +708,12 @@ def bestille_fra_kantina():
     session["menu_source"] = "Kantina"
     items = get_menu_items("Kantina")
     categories = build_categories_with_order("Kantina", items)
+    today = date.today().isoformat()
     return render_template("personlig/bestille_mat.html", 
                            categories=categories, 
                            menu_source="Kantina", 
-                           user=session.get("user"))
+                           user=session.get("user"),
+                           today=today)
 
 # Page: Order from WAKEUP
 @app.route("/bestille-fra-WAKEUP")

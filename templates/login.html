@@ -4,23 +4,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Logg inn</title>
+    <title>Logg inn - Kuben Kantine</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
-    <div class="centered-page is-tight">
-        <h2>Logg inn (alpha)</h2>
-        <form class="login-form" method="POST">
-            <label>Navn</label><br>
-            <input type="text" name="navn" required><br><br>
+    <script>
+        if (localStorage.getItem("theme") === "dark") {
+            document.body.classList.add("dark");
+        }
+    </script>
 
-            <label>E-post</label><br>
-            <input type="email" name="email" required><br><br>
+    <section class="centered-page login-panel">
+        <div class="login-card card">
+            <button class="login-theme-toggle" type="button" id="themeToggle" aria-label="Bytt tema">
+                <svg class="icon" id="themeIconSVG">
+                    <use id="themeIconUse" href="#icon-moon"></use>
+                </svg>
+                Tema
+            </button>
+            <h2>Logg inn</h2>
+            <p>(på den ekte nettsiden skal det brukes innlogging med Feide)</p>
 
-            <button type="submit">Logg inn</button>
-        </form>
-    </div>
+            <form class="login-form" method="POST">
+                <div class="login-field">
+                    <label for="navn">Navn</label>
+                    <input id="navn" type="text" name="navn" placeholder="Skriv inn fullt navn" required
+                        autocomplete="name">
+                </div>
+
+                <div class="login-field">
+                    <label for="email">E-post</label>
+                    <input id="email" type="email" name="email" placeholder="eksempel@e-post.com" required
+                        autocomplete="email">
+                </div>
+
+                <div class="login-actions">
+                    <p class="login-note">Nye brukere blir opprettet automatisk ved første innlogging.</p>
+                    <button class="login-submit" type="submit">
+                        <svg class="icon">
+                            <use href="#icon-arrow-right"></use>
+                        </svg>
+                        Logg inn
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <svg style="display:none;">
+        <!-- Moon -->
+        <symbol id="icon-moon" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+            <path d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 
+            0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 
+            21a9.753 9.753 0 0 0 9.002-5.998Z" />
+        </symbol>
+
+        <!-- Sun -->
+        <symbol id="icon-sun" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+            <path d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 
+            18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 
+            3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+        </symbol>
+
+        <symbol id="icon-arrow-right" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+            <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        </symbol>
+    </svg>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 
 </html>

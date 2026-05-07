@@ -90,7 +90,7 @@
             <div class="Henting">
                 <h2>Hentetidspunkt</h2>
                 <div>
-                    <label>Dato:<input type="date" name="hent_dato" required></label>
+                    <label>Dato:<input type="date" name="hent_dato" min="{{ today }}" required></label>
                 </div>
                 <div>
                     <label>Tid:<input type="time" name="hent_tid" required></label>
