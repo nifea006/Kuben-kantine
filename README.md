@@ -5,6 +5,11 @@ for teachers with ordering, kitchen/admin views, and menu editing.
 
 ---
 
+## Requirements
+
+- [python 3.xx](https://www.python.org/downloads/)
+- MySQL-compatible database such as [MySQL](https://www.mysql.com/downloads/) or [MariaDB](https://mariadb.org/download/?t=mariadb&p=mariadb&r=12.2.2&os=windows&cpu=x86_64&pkg=msi&mirror=dotsrc)
+
 ## How to Run the Project
 
 ### 1. Install Dependencies
@@ -17,8 +22,8 @@ Example:
 
 ```bash
 python -m venv venv
-source venv/bin/activate        # macOS/Linux
 venv\Scripts\activate           # Windows
+source venv/bin/activate        # macOS/Linux
 ```
 
 Then install the dependencies:
@@ -37,14 +42,23 @@ pip install flask mysql-connector-python python-dotenv requests
 
 ## Database Setup (MariaDB / MySQL)
 
-To run the webpage, you must use a MySQL-based database (such as MariaDB).
+To run the webpage, you must use a MySQL-compatible database such as MySQL or MariaDB.
 
 1. Create a new database in MariaDB/MySQL.  
-2. Create a `.env` file in the project root with your settings:
+2. Open [`app.py`](/app.py#L69) and find `get_connection_kantine()`.
+3. Replace the placeholder values with your own database settings:
 
-3. The app will auto-create required tables on startup.
+    ```python
+    def get_connection_kantine():
+        return mysql.connector.connect(
+            host="localhost",
+            user="your_user_name",
+            password="your_password",   
+            database="your_database_name"
+        )
+    ```
 
-If you prefer, you can also set the values directly in `app.py` in [`get_connection_kantine()`](./app.py#L68).
+4. Save the file and start the app. The required tables will be created automatically on first startup.
 
 ---
 

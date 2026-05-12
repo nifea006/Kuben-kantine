@@ -831,4 +831,4 @@ def submit():
     return redirect(url_for('vis_bestilling', order_id=order_id, menu_source=menu_source))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
