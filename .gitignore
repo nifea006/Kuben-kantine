@@ -1,9 +1,6 @@
-__pycache__/
-*.pyc
-
-.env
-.venv/
-
-instance/
-
-run_waitress.py
+/.env
+/.venv
+/__pycache__
+/.vscode
+.gitignore
+/static/uploads/mat-bilder

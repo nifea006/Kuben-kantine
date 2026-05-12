@@ -87,3 +87,15 @@ UPDATE users
 SET rolle_admin = 1
 WHERE epost = 'your@email.com';
 ```
+
+## Links
+
+The foog images:
+
+- [Pexels](https://www.pexels.com/)
+
+The icons:
+
+- [Heroicons](https://heroicons.com/)
+- [SVG Repo](https://www.svgrepo.com/)
+- [Flaticon](https://www.flaticon.com/)
