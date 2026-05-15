@@ -104,7 +104,22 @@ function validateOrder(event) {
         return false;
     }
 
+    showLoadingScreen();
     return true;
+}
+
+function showLoadingScreen() {
+    const loader = document.getElementById("loading");
+    if (!loader) return;
+    loader.classList.add("is-visible");
+    loader.setAttribute("aria-hidden", "false");
+}
+
+function hideLoadingScreen() {
+    const loader = document.getElementById("loading");
+    if (!loader) return;
+    loader.classList.remove("is-visible");
+    loader.setAttribute("aria-hidden", "true");
 }
 
 // Show and hide description
@@ -503,6 +518,30 @@ document.addEventListener("DOMContentLoaded", () => {
         form.addEventListener("submit", rebuildCategoryOrderInputs);
     }
 
+    document.querySelectorAll("form").forEach(currentForm => {
+        currentForm.addEventListener("submit", event => {
+            requestAnimationFrame(() => {
+                if (!event.defaultPrevented) {
+                    showLoadingScreen();
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll("a[href]").forEach(link => {
+        link.addEventListener("click", event => {
+            const href = link.getAttribute("href");
+
+            if (!href || href.startsWith("#") || href.startsWith("javascript:")) return;
+            if (link.hasAttribute("download")) return;
+            if (link.target && link.target !== "_self") return;
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+            if (event.button !== 0) return;
+
+            showLoadingScreen();
+        });
+    });
+
     if (navToggle && navDrawer) {
         const closeDrawer = () => {
             navDrawer.classList.remove("open");
@@ -610,8 +649,13 @@ window.addEventListener('beforeunload', () => {
 });
 
 window.addEventListener('load', () => {
+    hideLoadingScreen();
     const scrollPos = sessionStorage.getItem('scrollPos');
     if (scrollPos) window.scrollTo(0, parseInt(scrollPos, 10));
     sessionStorage.removeItem('scrollPos');
     updateBackToTopVisibility();
+});
+
+window.addEventListener("pageshow", () => {
+    hideLoadingScreen();
 });

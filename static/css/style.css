@@ -61,6 +61,51 @@ body {
     display: none;
 }
 
+.loading {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.9rem;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(17, 24, 39, 0.2);
+    color: #fff;
+    z-index: 999999;
+    cursor: wait;
+    text-align: center;
+}
+
+.loading.is-visible {
+    display: flex;
+}
+
+.loading p {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.loading-spinner {
+    width: 48px;
+    height: 48px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: global-loading-spin 0.85s linear infinite;
+}
+
+@keyframes global-loading-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 ::-webkit-scrollbar {
     display: none;
 }
