@@ -90,7 +90,7 @@ WHERE epost = 'your@email.com';
 
 ## Links
 
-The foog images:
+The food images:
 
 - [Pexels](https://www.pexels.com/)
 
